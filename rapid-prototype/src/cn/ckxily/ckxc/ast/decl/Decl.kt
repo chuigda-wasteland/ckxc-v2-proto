@@ -23,7 +23,7 @@ enum class DeclContextKind(val str: String) {
 fun DeclContextKind.getDescription() = str
 
 abstract class Decl(val declKind: DeclKind, val withinContext: DeclContext?) {
-	abstract fun getNameStr(): String?
+	abstract val nameStr: String?
 	abstract fun accept(astConsumer: ASTConsumer): Any?
 }
 
@@ -32,17 +32,17 @@ abstract class DeclContext(val declContextKind: DeclContextKind, declKind: DeclK
 	var decls: MutableList<Decl> = ArrayList()
 
 	fun pushDecl(decl: Decl) = decls.add(decl)
-	fun lookupDecl(name: String) = decls.filter { decl -> decl.getNameStr() == name }
+	fun lookupDecl(name: String) = decls.filter { decl -> decl.nameStr == name }
 }
 
 class TransUnitDecl : DeclContext(DeclContextKind.TransUnitContext, DeclKind.TransUnitDecl, null) {
-	override fun getNameStr(): String? = null
+	override val nameStr: String? get() = null
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitTransUnitDecl(this)
 }
 
 open class VarDecl(var name: String, var type: Type, withinContext: DeclContext)
 	: Decl(DeclKind.VarDecl, withinContext) {
-	override fun getNameStr(): String? = name
+	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitVarDecl(this)
 }
 
@@ -52,18 +52,18 @@ class FieldDecl(name: String, type: Type, withinContext: DeclContext) : VarDecl(
 
 class EnumeratorDecl(var name: String, var init: Int, withinContext: DeclContext)
 	: Decl(DeclKind.EnumDecl, withinContext) {
-	override fun getNameStr(): String? = name
+	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumeratorDecl(this)
 }
 
 class ClassDecl(val name: String, withinContext: DeclContext)
 	: DeclContext(DeclContextKind.ClassContext, DeclKind.ClassDecl, withinContext) {
-	override fun getNameStr(): String? = name
+	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitClassDecl(this)
 }
 
 class EnumDecl(val name: String, withinContext: DeclContext)
 	: DeclContext(DeclContextKind.EnumContext, DeclKind.EnumDecl, withinContext) {
-	override fun getNameStr(): String? = name
+	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumDecl(this)
 }
