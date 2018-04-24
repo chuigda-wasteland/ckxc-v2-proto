@@ -17,8 +17,8 @@ abstract class ASTConsumer {
 
 fun typeToString(type: Type) = when(type) {
 	is BuiltinType -> type.builinTypeId.str
-	is ClassType -> type.decl.name
-	is EnumType -> type.decl.name
+	is ClassType -> type.decl.nameStr
+	is EnumType -> type.decl.nameStr
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
@@ -44,7 +44,7 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
 
 	override fun visitEnumDecl(enumDecl: EnumDecl): Any? {
 		indent(); println("Enum declaration begin!")
-		indent(); println("enum ${enumDecl.name}")
+		indent(); println("enum ${enumDecl.nameStr}")
 		indentation++
 		for (subDecl in enumDecl.decls) subDecl.accept(this)
 		indentation--
@@ -53,13 +53,13 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
 	}
 
 	override fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any? {
-		indent(); println("${enumeratorDecl.name} = ${enumeratorDecl.init}")
+		indent(); println("${enumeratorDecl.nameStr} = ${enumeratorDecl.init}")
 		return null
 	}
 
 	override fun visitClassDecl(classDecl: ClassDecl): Any? {
 		indent(); println("Class declaration begin!")
-		indent(); println("class ${classDecl.name}")
+		indent(); println("class ${classDecl.nameStr}")
 		indentation++
 		for (subDecl in classDecl.decls) subDecl.accept(this)
 		indentation--

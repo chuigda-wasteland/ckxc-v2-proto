@@ -50,20 +50,17 @@ class FieldDecl(name: String, type: Type, withinContext: DeclContext) : VarDecl(
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitFieldDecl(this)
 }
 
-class EnumeratorDecl(var name: String, var init: Int, withinContext: DeclContext)
+class EnumeratorDecl(override var nameStr: String, var init: Int, withinContext: DeclContext)
 	: Decl(DeclKind.EnumDecl, withinContext) {
-	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumeratorDecl(this)
 }
 
-class ClassDecl(val name: String, withinContext: DeclContext)
+class ClassDecl(override val nameStr: String, withinContext: DeclContext)
 	: DeclContext(DeclContextKind.ClassContext, DeclKind.ClassDecl, withinContext) {
-	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitClassDecl(this)
 }
 
-class EnumDecl(val name: String, withinContext: DeclContext)
+class EnumDecl(override val nameStr: String, withinContext: DeclContext)
 	: DeclContext(DeclContextKind.EnumContext, DeclKind.EnumDecl, withinContext) {
-	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumDecl(this)
 }
