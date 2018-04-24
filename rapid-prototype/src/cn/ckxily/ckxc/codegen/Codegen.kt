@@ -1,28 +1,27 @@
 package cn.ckxily.ckxc.codegen
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.type.BuiltinType
-import cn.ckxily.ckxc.ast.type.ClassType
-import cn.ckxily.ckxc.ast.type.EnumType
-import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.type.*
 
-abstract class ASTConsumer {
-	abstract fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any?
-	abstract fun visitVarDecl(varDecl: VarDecl): Any?
-	abstract fun visitEnumDecl(enumDecl: EnumDecl): Any?
-	abstract fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any?
-	abstract fun visitClassDecl(classDecl: ClassDecl): Any?
-	abstract fun visitFieldDecl(fieldDecl: FieldDecl): Any?
+interface ASTConsumer {
+	fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any?
+	fun visitVarDecl(varDecl: VarDecl): Any?
+	fun visitEnumDecl(enumDecl: EnumDecl): Any?
+	fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any?
+	fun visitClassDecl(classDecl: ClassDecl): Any?
+	fun visitFieldDecl(fieldDecl: FieldDecl): Any?
 }
 
-fun typeToString(type: Type) = when(type) {
+fun typeToString(type: Type) = when (type) {
 	is BuiltinType -> type.builinTypeId.str
 	is ClassType -> type.decl.nameStr
 	is EnumType -> type.decl.nameStr
 }
 
-class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
-	fun indent() { var i = 0; while (i < indentation*3) { print(" "); ++i } }
+class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
+	fun indent() {
+		var i = 0; while (i < indentation * 3) { print(" "); ++i }
+	}
 
 	override fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any? {
 		println("Translation unit start!")
@@ -36,7 +35,7 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
 	override fun visitVarDecl(varDecl: VarDecl): Any? {
 		indent(); println("Variable declaration begin!")
 		indentation++
-		indent(); println("${varDecl.name} of type ${typeToString(varDecl.type)}")
+		indent(); println("${varDecl.nameStr} of type ${typeToString(varDecl.type)}")
 		indentation--
 		indent(); println("Variable declaration end!")
 		return null

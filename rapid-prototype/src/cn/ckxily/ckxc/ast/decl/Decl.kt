@@ -20,7 +20,7 @@ enum class DeclContextKind(val str: String) {
 	ClassContext("Inside Class")
 }
 
-fun DeclContextKind.getDescription() = str
+val DeclContextKind.description get() = str
 
 abstract class Decl(val declKind: DeclKind, val withinContext: DeclContext?) {
 	abstract val nameStr: String?
@@ -40,9 +40,8 @@ class TransUnitDecl : DeclContext(DeclContextKind.TransUnitContext, DeclKind.Tra
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitTransUnitDecl(this)
 }
 
-open class VarDecl(var name: String, var type: Type, withinContext: DeclContext)
+open class VarDecl(override var nameStr: String, var type: Type, withinContext: DeclContext)
 	: Decl(DeclKind.VarDecl, withinContext) {
-	override val nameStr: String? get() = name
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitVarDecl(this)
 }
 
