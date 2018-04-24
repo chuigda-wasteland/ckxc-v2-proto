@@ -18,13 +18,10 @@ abstract class ASTConsumer {
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
 	fun indent() { var i = 0; while (i < indentation*3) { print(" "); ++i } }
 
-	fun typeToString(type: Type): String {
-		return when(type) {
-			is BuiltinType -> type.builinTypeId.str
-			is ClassType -> type.decl.name
-			is EnumType -> type.decl.name
-			else -> null!!
-		}
+	fun typeToString(type: Type) = when(type) {
+		is BuiltinType -> type.builinTypeId.str
+		is ClassType -> type.decl.name
+		is EnumType -> type.decl.name
 	}
 
 	override fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any? {

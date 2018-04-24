@@ -12,7 +12,7 @@ enum class DeclKind(val str: String) {
 	FieldDecl("Field")
 }
 
-fun DeclKind.getDescription() = str
+val DeclKind.description get() = str
 
 enum class DeclContextKind(val str: String) {
 	TransUnitContext("Top Level Of Translation Unit"),

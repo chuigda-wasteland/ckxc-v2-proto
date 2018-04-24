@@ -1,21 +1,24 @@
 package cn.ckxily.ckxc.ast.type
 
-import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.decl.ClassDecl
+import cn.ckxily.ckxc.ast.decl.EnumDecl
 
-enum class TypeId(val str: String) {
-	Builtin("Builtin"),
-	Class("Class"),
-	Enum("Enum")
+enum class TypeId {
+	Builtin,
+	Class,
+	Enum;
+
+	val str get() = name
 }
 
 enum class BuiltinTypeId(val str: String) {
 	Int8("8bit Integer"),
-  Int16("16bit Integer"),
+	Int16("16bit Integer"),
 	Int32("32bit Integer"),
 	Float("Float")
 }
 
-abstract class Type(var typeId: TypeId)
+sealed class Type(var typeId: TypeId)
 
 class BuiltinType(val builinTypeId: BuiltinTypeId) : Type(TypeId.Builtin)
 
