@@ -15,14 +15,14 @@ abstract class ASTConsumer {
 	abstract fun visitFieldDecl(fieldDecl: FieldDecl): Any?
 }
 
+fun typeToString(type: Type) = when(type) {
+	is BuiltinType -> type.builinTypeId.str
+	is ClassType -> type.decl.name
+	is EnumType -> type.decl.name
+}
+
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer() {
 	fun indent() { var i = 0; while (i < indentation*3) { print(" "); ++i } }
-
-	fun typeToString(type: Type) = when(type) {
-		is BuiltinType -> type.builinTypeId.str
-		is ClassType -> type.decl.name
-		is EnumType -> type.decl.name
-	}
 
 	override fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any? {
 		println("Translation unit start!")
