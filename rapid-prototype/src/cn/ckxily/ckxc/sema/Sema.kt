@@ -7,13 +7,14 @@ import cn.ckxily.ckxc.ast.decl.DeclContext
 // If so, `lookup` should collect all definitions with the same name
 class Scope(private val entity: DeclContext, val parentScope: Scope?) {
 	fun lookupLocal(name: String): List<Decl> = entity.lookupDecl(name)
-
-	tailrec fun lookup(name: String, scope: Scope = this): List<Decl> {
-		val localResult = scope.lookupLocal(name)
-		return if (localResult.isEmpty() && parentScope != null) {
-			lookup(name, parentScope)
-		} else localResult
-	}
-
+	fun lookup(name: String) = lookup(name, this)
 	fun pushDecl(decl: Decl) = entity.pushDecl(decl)
 }
+
+tailrec fun lookup(name: String, scope: Scope): List<Decl> {
+	val localResult = scope.lookupLocal(name)
+	return if (localResult.isEmpty() && scope.parentScope != null) {
+		lookup(name, scope.parentScope)
+	} else localResult
+}
+
