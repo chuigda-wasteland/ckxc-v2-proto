@@ -1,4 +1,4 @@
-package cn.ckxily.ckxc.Sema
+package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.Decl
 import cn.ckxily.ckxc.ast.decl.DeclContext
