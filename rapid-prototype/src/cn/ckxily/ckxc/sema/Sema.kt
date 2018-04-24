@@ -9,7 +9,7 @@ class Scope(private val entity: DeclContext, val parentScope: Scope?) {
 	fun lookupLocal(name: String): List<Decl> = entity.lookupDecl(name)
 
 	tailrec fun lookup(name: String, scope: Scope = this): List<Decl> {
-		val localResult = lookupLocal(name)
+		val localResult = scope.lookupLocal(name)
 		return if (localResult.isEmpty() && parentScope != null) {
 			lookup(name, parentScope)
 		} else localResult
