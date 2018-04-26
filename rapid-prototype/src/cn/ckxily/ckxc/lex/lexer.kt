@@ -10,7 +10,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 				in 'a'..'z' -> cachedTokens.add(lexIdentifier())
 				in 'A'..'Z' -> cachedTokens.add(lexIdentifier())
 				in '0'..'9' -> cachedTokens.add(lexNumber())
-				in charArrayOf('.', ',', ':', '+') -> cachedTokens.add(lexSymbol())
+				in ".,:+" -> cachedTokens.add(lexSymbol())
 				else -> null!!
 			}
 		}
@@ -18,13 +18,9 @@ internal class LexerStateMachine(private val srcCode: String) {
 	}
 
 	private fun lexIdentifier(): Token {
-		assert((srcCode[index] in 'a'..'z') or (srcCode[index] in 'A'..'Z'))
-		val idStr = lexFullString(('a'..'z').toString()
-															+ ('A'..'Z').toString()
-															+ ('0'..'9').toString()
-															+ "_")
-		val kwdType: TokenType? = idKwdMap.get(idStr)
-		return if (kwdType != null) Token(kwdType) else Token(TokenType.Id, idStr)
+		assert(srcCode[index].isLetter())
+		val idStr = lexFullString("${'a'..'z'}${'A'..'Z'}${'0'..'9'}_")
+		return idKwdMap[idStr]?.let { Token(it) } ?: Token(TokenType.Id, idStr)
 	}
 
 	private fun lexNumber(): Token {
@@ -35,7 +31,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 		val symbolStr: String = when (srcCode[index]) {
 			in "+*/:;,.<>{}[]()" -> srcCode[index].toString()
 			'-' -> run {
-				if (index+1 < srcCode.length && srcCode[index+1]=='>') {
+				if (index + 1 < srcCode.length && srcCode[index + 1] == '>') {
 					index += 2
 					"->"
 				}
@@ -44,7 +40,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 				}
 			}
 			'=' -> run {
-				if (index+1 < srcCode.length && srcCode[index+1]=='=') {
+				if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
 					index += 2
 					"=="
 				}
@@ -55,16 +51,14 @@ internal class LexerStateMachine(private val srcCode: String) {
 			else -> null!!
 		}
 
-		return Token(idKwdMap.get(symbolStr)!!)
+		return Token(idKwdMap[symbolStr]!!)
 	}
 
-	private fun lexFullString(allowedChars: CharSequence): String {
-		val sb = StringBuilder()
+	private fun lexFullString(allowedChars: CharSequence) = buildString {
 		while (srcCode[index] in allowedChars) {
-			sb.append(srcCode[index])
+			append(srcCode[index])
 			++index
 		}
-		return sb.toString()
 	}
 
 	init {
