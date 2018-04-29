@@ -6,6 +6,7 @@ import cn.ckxily.ckxc.ast.type.EnumType
 import cn.ckxily.ckxc.codegen.ASTPrinter
 
 fun Array<String>.main() {
+
 	val transUnit = TransUnitDecl()
 
 	run {

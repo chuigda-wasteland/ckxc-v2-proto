@@ -5,6 +5,8 @@ import cn.ckxily.ckxc.ast.decl.EnumDecl
 
 enum class TypeId {
 	Builtin,
+	Pointer,
+	Reference,
 	Class,
 	Enum;
 
@@ -18,10 +20,16 @@ enum class BuiltinTypeId(val str: String) {
 	Float("Float")
 }
 
-sealed class Type(var typeId: TypeId)
+data class TypeSpecifiers(var isConst: Boolean, var isVolatile: Boolean)
 
-class BuiltinType(val builinTypeId: BuiltinTypeId) : Type(TypeId.Builtin)
+sealed class Type(var typeId: TypeId, var specifiers: TypeSpecifiers)
 
-class ClassType(var decl: ClassDecl) : Type(TypeId.Class)
+class BuiltinType(val builinTypeId: BuiltinTypeId, specifiers: TypeSpecifiers) : Type(TypeId.Builtin, specifiers)
 
-class EnumType(var decl: EnumDecl) : Type(TypeId.Enum)
+class PointerType(var pointee: Type, specifiers: TypeSpecifiers) : Type(TypeId.Pointer, specifiers)
+
+class ReferenceType(var referenced: Type, specifiers: TypeSpecifiers) : Type(TypeId.Reference, specifiers)
+
+class ClassType(var decl: ClassDecl, specifiers: TypeSpecifiers) : Type(TypeId.Class, specifiers)
+
+class EnumType(var decl: EnumDecl, specifiers: TypeSpecifiers) : Type(TypeId.Enum, specifiers)

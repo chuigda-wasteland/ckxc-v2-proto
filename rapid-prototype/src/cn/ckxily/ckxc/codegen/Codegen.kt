@@ -12,8 +12,10 @@ interface ASTConsumer {
 	fun visitFieldDecl(fieldDecl: FieldDecl): Any?
 }
 
-fun typeToString(type: Type) = when (type) {
+fun typeToString(type: Type): String = when (type) {
 	is BuiltinType -> type.builinTypeId.str
+	is PointerType -> "Pointer to ${typeToString(type.pointee)}"
+	is ReferenceType -> "Reference to ${typeToString(type.referenced)}"
 	is ClassType -> type.decl.nameStr
 	is EnumType -> type.decl.nameStr
 }
