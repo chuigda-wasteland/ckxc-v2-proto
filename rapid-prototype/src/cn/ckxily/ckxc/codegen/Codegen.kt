@@ -13,11 +13,11 @@ interface ASTConsumer {
 }
 
 fun typeToString(type: Type): String = when (type) {
-	is BuiltinType -> type.builinTypeId.str
-	is PointerType -> "Pointer to ${typeToString(type.pointee)}"
-	is ReferenceType -> "Reference to ${typeToString(type.referenced)}"
-	is ClassType -> type.decl.nameStr
-	is EnumType -> type.decl.nameStr
+	is BuiltinType -> "${type.builinTypeId.str} ${type.specifiers}"
+	is PointerType -> "${type.specifiers} pointer to ${typeToString(type.pointee)}"
+	is ReferenceType -> "${type.specifiers} reference to ${typeToString(type.referenced)}"
+	is ClassType -> "${type.decl.nameStr} ${type.specifiers}"
+	is EnumType -> "${type.decl.nameStr} ${type.specifiers}"
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {

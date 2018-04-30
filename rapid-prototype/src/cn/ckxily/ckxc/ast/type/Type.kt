@@ -20,7 +20,22 @@ enum class BuiltinTypeId(val str: String) {
 	Float("Float")
 }
 
-data class TypeSpecifiers(var isConst: Boolean, var isVolatile: Boolean)
+data class TypeSpecifiers(var isConst: Boolean, var isVolatile: Boolean) {
+	override fun toString() = buildString {
+		if (isConst) append("Const")
+		if (isVolatile) {
+			if (isConst) {
+				append(' ')
+			}
+			append("Volatile")
+		}
+	}
+}
+
+fun getCVSpecifiers() = TypeSpecifiers(true, true)
+fun getCSpecifier() = TypeSpecifiers(true, false)
+fun getVSpecifier() = TypeSpecifiers(false, true)
+fun getNoSpecifier() = TypeSpecifiers(false, false)
 
 sealed class Type(var typeId: TypeId, var specifiers: TypeSpecifiers)
 

@@ -1,8 +1,7 @@
 package cn.ckxily.ckxc.main
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.type.ClassType
-import cn.ckxily.ckxc.ast.type.EnumType
+import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.codegen.ASTPrinter
 
 fun Array<String>.main() {
@@ -23,8 +22,8 @@ fun Array<String>.main() {
 				}
 				null
 			}
-			val var1 = VarDecl("light1k", ClassType(class2), class1)
-			val var2 = VarDecl("activeGroup", EnumType(enum1), class1)
+			val var1 = VarDecl("light1k", ClassType(class2, getNoSpecifier()), class1)
+			val var2 = VarDecl("activeGroup", EnumType(enum1, getCVSpecifiers()), class1)
 
 			with(class1) {
 				pushDecl(class2)
@@ -34,7 +33,7 @@ fun Array<String>.main() {
 			}
 			null
 		}
-		val var3 = VarDecl("ice1k", ClassType(class1), transUnit)
+		val var3 = VarDecl("ice1k", ClassType(class1, getCSpecifier()), transUnit)
 
 		with(transUnit) {
 			pushDecl(class1)
@@ -45,4 +44,6 @@ fun Array<String>.main() {
 
 	val astConsumer = ASTPrinter()
 	transUnit.accept(astConsumer)
+
+	println("done")
 }
