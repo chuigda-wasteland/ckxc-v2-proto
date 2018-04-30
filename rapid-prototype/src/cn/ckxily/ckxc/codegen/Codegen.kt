@@ -1,7 +1,6 @@
 package cn.ckxily.ckxc.codegen
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.type.*
 
 interface ASTConsumer {
 	fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any?
@@ -10,14 +9,6 @@ interface ASTConsumer {
 	fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any?
 	fun visitClassDecl(classDecl: ClassDecl): Any?
 	fun visitFieldDecl(fieldDecl: FieldDecl): Any?
-}
-
-fun typeToString(type: Type): String = when (type) {
-	is BuiltinType -> "${type.builinTypeId.str} ${type.specifiers}"
-	is PointerType -> "${type.specifiers} pointer to ${typeToString(type.pointee)}"
-	is ReferenceType -> "${type.specifiers} reference to ${typeToString(type.referenced)}"
-	is ClassType -> "${type.decl.nameStr} ${type.specifiers}"
-	is EnumType -> "${type.decl.nameStr} ${type.specifiers}"
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
@@ -37,7 +28,7 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 	override fun visitVarDecl(varDecl: VarDecl): Any? {
 		indent(); println("Variable declaration begin!")
 		indentation++
-		indent(); println("${varDecl.nameStr} of type ${typeToString(varDecl.type)}")
+		indent(); println("${varDecl.nameStr} of type ${varDecl.type}")
 		indentation--
 		indent(); println("Variable declaration end!")
 		return null
