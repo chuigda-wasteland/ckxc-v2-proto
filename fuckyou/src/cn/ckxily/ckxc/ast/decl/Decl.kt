@@ -32,7 +32,16 @@ abstract class DeclContext(val declContextKind: DeclContextKind, declKind: DeclK
 	var decls: MutableList<Decl> = ArrayList()
 
 	fun pushDecl(decl: Decl) = decls.add(decl)
-	fun lookupDecl(name: String) = decls.filter { decl -> decl.nameStr == name }
+	fun lookupLocalDecl(name: String) = decls.filter { decl -> decl.nameStr == name }
+	fun lookupDecl(name: String) = lookupDecl(this, name)
+}
+
+tailrec fun lookupDecl(declContext: DeclContext, name: String): List<Decl> {
+	val localResult = declContext.lookupLocalDecl(name)
+	if (declContext.withinContext != null && localResult.isEmpty()) {
+		return lookupDecl(declContext.withinContext, name)
+	}
+	return ArrayList()
 }
 
 class TransUnitDecl : DeclContext(DeclContextKind.TransUnitContext, DeclKind.TransUnitDecl, null) {
@@ -43,10 +52,6 @@ class TransUnitDecl : DeclContext(DeclContextKind.TransUnitContext, DeclKind.Tra
 open class VarDecl(override var nameStr: String, var type: Type, withinContext: DeclContext)
 	: Decl(DeclKind.VarDecl, withinContext) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitVarDecl(this)
-}
-
-class FieldDecl(name: String, type: Type, withinContext: DeclContext) : VarDecl(name, type, withinContext) {
-	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitFieldDecl(this)
 }
 
 class EnumeratorDecl(override var nameStr: String, var init: Int, withinContext: DeclContext)

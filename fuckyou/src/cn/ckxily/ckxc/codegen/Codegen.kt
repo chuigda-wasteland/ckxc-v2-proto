@@ -8,7 +8,6 @@ interface ASTConsumer {
 	fun visitEnumDecl(enumDecl: EnumDecl): Any?
 	fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any?
 	fun visitClassDecl(classDecl: ClassDecl): Any?
-	fun visitFieldDecl(fieldDecl: FieldDecl): Any?
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
@@ -56,11 +55,6 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 		for (subDecl in classDecl.decls) subDecl.accept(this)
 		indentation--
 		indent(); println("Class declaration end!")
-		return null
-	}
-
-	override fun visitFieldDecl(fieldDecl: FieldDecl): Any? {
-		visitVarDecl(fieldDecl)
 		return null
 	}
 }
