@@ -3,10 +3,26 @@ package cn.ckxily.ckxc.sema
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.type.Type
 import java.lang.System.exit
+import java.util.TreeSet
+
+class Scope(val parent: Scope? = null,
+						var localDecls: MutableSet<Decl> = TreeSet(),
+						var entity: DeclContext? = null,
+						var depth: Int) {
+	init {
+		depth = if (parent == null) 0 else parent.depth + 1
+	}
+
+	fun addDecl(decl: Decl) = localDecls.add(decl)
+	fun removeDecl(decl: Decl) = localDecls.remove(decl)
+}
+
+class LookupRequest()
+
+class LookupResult()
 
 class Sema(var currentDeclContext: DeclContext,
 					 var topLevelDeclContext: DeclContext) {
-
 	init {
 		topLevelDeclContext = TransUnitDecl()
 		currentDeclContext = topLevelDeclContext
@@ -64,7 +80,5 @@ class Sema(var currentDeclContext: DeclContext,
 		return enumeratorDecl
 	}
 
-	fun actOnFinishEnumDecl(): EnumDecl {
-		return popDeclContext() as EnumDecl
-	}
+	fun actOnFinishEnumDecl(): EnumDecl = popDeclContext() as EnumDecl
 }
