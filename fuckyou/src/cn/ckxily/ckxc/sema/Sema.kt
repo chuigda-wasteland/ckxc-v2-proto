@@ -35,10 +35,10 @@ class Sema(var currentDeclContext: DeclContext,
 		currentDeclContext = topLevelDeclContext
 	}
 
-	fun pushDeclContext(declContext: DeclContext) {
+	fun pushDeclContext(scope: Scope, declContext: DeclContext) {
 		assert(declContext.withinContext == currentDeclContext)
 		currentDeclContext = declContext
-		currentScope.entity = currentDeclContext
+		scope.entity = currentDeclContext
 	}
 
 	fun popDeclContext(): DeclContext {
@@ -69,9 +69,46 @@ class Sema(var currentDeclContext: DeclContext,
 		scope.removeDecl(decl)
 	}
 
-	fun checkDuplicate(nameStr: String) {
-		if (currentDeclContext.lookupLocalDecl(nameStr).isNotEmpty()) {
+	fun checkDuplicate(scope: Scope, nameStr: String) {
+		if (scope.lookupLocally(nameStr).isNotEmpty()) {
 			error("redefinition of ${nameStr}")
 		}
+	}
+
+	fun actOnVarDecl(scope: Scope, atLine: Int, name: String, type: Type, addToContext: Boolean): VarDecl {
+		checkDuplicate(scope, name)
+		val varDecl = VarDecl(name, type, currentDeclContext)
+		pushOnScopeChains(varDecl, scope, addToContext)
+		return varDecl
+	}
+
+	fun actOnClass(scope: Scope, atLine: Int, name: String, addToContext: Boolean): ClassDecl {
+		checkDuplicate(scope, name)
+		val classDecl = ClassDecl(name, currentDeclContext)
+		pushOnScopeChains(classDecl, scope, addToContext)
+		return classDecl
+	}
+
+	fun actOnEnum(scope: Scope, atLine: Int, name: String, addToContext: Boolean): EnumDecl {
+		checkDuplicate(scope, name)
+		val enumDecl = EnumDecl(name, currentDeclContext)
+		pushOnScopeChains(enumDecl, scope, addToContext)
+		return enumDecl
+	}
+
+	fun actOnTagStartDefinition(scope: Scope, tagDecl: Decl) {
+		pushDeclContext(scope, tagDecl as DeclContext)
+	}
+
+	fun actOnTagFinishDefinition() {
+		popDeclContext()
+	}
+
+	fun actOnEnumarator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
+		checkDuplicate(scope, name)
+		val declContext = enumDecl as DeclContext
+		val enumerator = EnumeratorDecl(name, init?: 0, declContext)
+		pushOnScopeChains(enumerator, scope, true)
+		return enumerator
 	}
 }
