@@ -17,8 +17,8 @@ fun Array<String>.main() {
 				val enumerator1 = EnumeratorDecl("Compiler1k", 0, enum1)
 				val enumerator2 = EnumeratorDecl("Suspended1k", 1, enum1)
 				with(enum1) {
-					pushDecl(enumerator1)
-					pushDecl(enumerator2)
+					addDecl(enumerator1)
+					addDecl(enumerator2)
 				}
 				null
 			}
@@ -26,18 +26,18 @@ fun Array<String>.main() {
 			val var2 = VarDecl("activeGroup", EnumType(enum1, getCVSpecifiers()), class1)
 
 			with(class1) {
-				pushDecl(class2)
-				pushDecl(enum1)
-				pushDecl(var1)
-				pushDecl(var2)
+				addDecl(class2)
+				addDecl(enum1)
+				addDecl(var1)
+				addDecl(var2)
 			}
 			null
 		}
 		val var3 = VarDecl("ice1k", ClassType(class1, getCSpecifier()), transUnit)
 
 		with(transUnit) {
-			pushDecl(class1)
-			pushDecl(var3)
+			addDecl(class1)
+			addDecl(var3)
 		}
 		null
 	}

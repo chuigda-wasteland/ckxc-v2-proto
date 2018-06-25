@@ -2,7 +2,6 @@ package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.type.Type
-import java.lang.System.exit
 import java.util.TreeSet
 
 class Scope(val parent: Scope? = null,
