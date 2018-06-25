@@ -6,22 +6,29 @@ import java.lang.System.exit
 import java.util.TreeSet
 
 class Scope(val parent: Scope? = null,
-						var localDecls: MutableSet<Decl> = TreeSet(),
+						var depth: Int,
 						var entity: DeclContext? = null,
-						var depth: Int) {
+						var decls: MutableSet<Decl> = TreeSet()) {
 	init {
 		depth = if (parent == null) 0 else parent.depth + 1
 	}
 
-	fun addDecl(decl: Decl) = localDecls.add(decl)
-	fun removeDecl(decl: Decl) = localDecls.remove(decl)
+	fun addDecl(decl: Decl) = decls.add(decl)
+	fun removeDecl(decl: Decl) = decls.remove(decl)
+	fun lookupLocally(name: String) = decls.filter { decl -> decl.nameStr?.equals(name) ?: false }
+	fun lookup(name: String) = lookup(this, name)
 }
 
-class LookupRequest()
-
-class LookupResult()
+tailrec fun lookup(scope: Scope, name: String): List<Decl> {
+	val localResult = scope.lookupLocally(name)
+	if (localResult.isEmpty() && scope.parent != null) {
+		return lookup(scope.parent, name)
+	}
+	return localResult
+}
 
 class Sema(var currentDeclContext: DeclContext,
+					 var currentScope: Scope,
 					 var topLevelDeclContext: DeclContext) {
 	init {
 		topLevelDeclContext = TransUnitDecl()
@@ -31,6 +38,7 @@ class Sema(var currentDeclContext: DeclContext,
 	fun pushDeclContext(declContext: DeclContext) {
 		assert(declContext.withinContext == currentDeclContext)
 		currentDeclContext = declContext
+		currentScope.entity = currentDeclContext
 	}
 
 	fun popDeclContext(): DeclContext {
@@ -39,46 +47,31 @@ class Sema(var currentDeclContext: DeclContext,
 		return popedContext
 	}
 
-	fun actOnTransUnitDeclFinished(): TransUnitDecl {
-		return topLevelDeclContext as TransUnitDecl
+	fun pushScope() {
+		currentScope = Scope(currentScope, currentScope.depth+1)
+	}
+
+	fun popScope() {
+		currentScope = currentScope.parent!!
+	}
+
+	fun pushOnScopeChains(decl: Decl, scope: Scope, addToContext: Boolean) {
+		if (addToContext) {
+			currentDeclContext.addDecl(decl)
+		}
+		scope.addDecl(decl)
+	}
+
+	fun removeFromScopeChains(decl: Decl, scope: Scope, removeFromContext: Boolean) {
+		if (removeFromContext) {
+			currentDeclContext.removeDecl(decl)
+		}
+		scope.removeDecl(decl)
 	}
 
 	fun checkDuplicate(nameStr: String) {
 		if (currentDeclContext.lookupLocalDecl(nameStr).isNotEmpty()) {
-			println("Error: redefinition of name ${nameStr}")
-			exit(-1);
+			error("redefinition of ${nameStr}")
 		}
 	}
-
-	fun actOnVarDecl(nameStr: String, type: Type, withinContext: DeclContext = currentDeclContext): VarDecl? {
-		checkDuplicate(nameStr)
-		val varDecl = VarDecl(nameStr, type, withinContext)
-		currentDeclContext.pushDecl(varDecl)
-		return varDecl
-	}
-
-	fun actOnStartClassDecl(nameStr: String) {
-		val classDecl = ClassDecl(nameStr, currentDeclContext)
-		currentDeclContext.pushDecl(classDecl)
-		pushDeclContext(classDecl)
-	}
-
-	fun actOnFinishClassDecl(): ClassDecl {
-		return popDeclContext() as ClassDecl
-	}
-
-	fun actOnStartEnumDecl(nameStr: String) {
-		val enumDecl = EnumDecl(nameStr, currentDeclContext)
-		currentDeclContext.pushDecl(enumDecl)
-		pushDeclContext(enumDecl)
-	}
-
-	fun actOnEnumerator(nameStr: String, init: Int?, lastEnumerator: EnumeratorDecl?): EnumeratorDecl {
-		checkDuplicate(nameStr)
-		val enumeratorDecl = EnumeratorDecl(nameStr, init ?: (lastEnumerator?.init ?: 0), currentDeclContext)
-		currentDeclContext.pushDecl(enumeratorDecl)
-		return enumeratorDecl
-	}
-
-	fun actOnFinishEnumDecl(): EnumDecl = popDeclContext() as EnumDecl
 }

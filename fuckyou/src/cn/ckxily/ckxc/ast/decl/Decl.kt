@@ -31,7 +31,8 @@ abstract class DeclContext(val declContextKind: DeclContextKind, declKind: DeclK
 	: Decl(declKind, withinContext) {
 	var decls: MutableList<Decl> = ArrayList()
 
-	fun pushDecl(decl: Decl) = decls.add(decl)
+	fun addDecl(decl: Decl) = decls.add(decl)
+	fun removeDecl(decl: Decl) = decls.remove(decl)
 	fun lookupLocalDecl(name: String) = decls.filter { decl -> decl.nameStr == name }
 	fun lookupDecl(name: String) = lookupDecl(this, name)
 }

@@ -1,5 +1,7 @@
 package cn.ckxily.ckxc.lex
 
+import cn.ckxily.ckxc.err.assertionFailed
+
 internal class LexerStateMachine(private val srcCode: String) {
 	private var index: Int = 0
 	private var cachedTokens: MutableList<Token> = ArrayList()
@@ -11,7 +13,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 				in 'A'..'Z' -> cachedTokens.add(lexIdentifier())
 				in '0'..'9' -> cachedTokens.add(lexNumber())
 				in ".,:+" -> cachedTokens.add(lexSymbol())
-				else -> null!!
+				else -> error("character ${srcCode[index]} is not allowed")
 			}
 		}
 		cachedTokens.add(Token(TokenType.EOI))
@@ -48,7 +50,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 					"="
 				}
 			}
-			else -> null!!
+			else -> assertionFailed("No other characters allowed when lexing symbol") as String
 		}
 
 		return Token(idKwdMap[symbolStr]!!)
