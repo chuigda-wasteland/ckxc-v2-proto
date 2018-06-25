@@ -68,7 +68,7 @@ class Sema(var currentDeclContext: DeclContext,
 			currentDeclContext.removeDecl(decl)
 		}
 		scope.removeDecl(decl)
-	}cd pro
+	}
 
 	fun checkDuplicate(scope: Scope, nameStr: String) {
 		if (scope.lookupLocally(nameStr).isNotEmpty()) {
