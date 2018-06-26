@@ -29,6 +29,8 @@ enum class TokenType(val str: String) {
 	Sub("-"),
 	Mul("*"),
 	Div("/"),
+	Not("!"),
+	Neq("!="),
 	LeftBrace("{"),
 	RightBrace("}"),
 	LeftBracket("["),
@@ -38,4 +40,8 @@ enum class TokenType(val str: String) {
 	EOI("EOI\$")
 }
 
-class Token(val tokenType: TokenType, val value: Any? = null)
+class Token(val tokenType: TokenType, val value: Any? = null) {
+	override fun toString(): String {
+		return "${tokenType} (${value ?: tokenType.str})"
+	}
+}

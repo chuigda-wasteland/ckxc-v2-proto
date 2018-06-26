@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="36a8c96f-0c89-4961-807b-de4e4aea4c49" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/src/lexertest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/icey.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/icey.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,8 +30,8 @@
       <file leaf-file-name="main.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
-              <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+            <state relative-caret-position="69">
+              <caret line="5" selection-start-line="5" selection-end-line="5" />
               <folding>
                 <element signature="e#29#135#0" expanded="true" />
               </folding>
@@ -37,11 +39,41 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Sema.kt" pinned="false" current-in-tab="true">
+      <file leaf-file-name="lexertest.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lexertest.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="230">
+              <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HashMap.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/HashMap.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="12374">
+              <caret line="579" selection-start-line="579" selection-end-line="579" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Sema.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="69">
-              <caret line="3" column="35" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+            <state relative-caret-position="23">
+              <caret line="77" column="28" selection-start-line="77" selection-start-column="28" selection-end-line="77" selection-end-column="28" />
+              <folding>
+                <element signature="e#29#122#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="lexer.kt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="190">
+              <caret line="49" column="17" selection-start-line="49" selection-start-column="17" selection-end-line="49" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -49,8 +81,8 @@
       <file leaf-file-name="Decl.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1633">
-              <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+            <state relative-caret-position="193">
+              <caret line="46" selection-start-line="46" selection-end-line="46" />
               <folding>
                 <element signature="e#33#110#0" expanded="true" />
               </folding>
@@ -58,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="lexer.kt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt">
+      <file leaf-file-name="Token.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1863">
-              <caret line="81" lean-forward="true" selection-start-line="81" selection-end-line="81" />
+            <state relative-caret-position="262">
+              <caret line="31" column="11" lean-forward="true" selection-start-line="31" selection-start-column="11" selection-end-line="31" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -86,10 +118,15 @@
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/err.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/err/err.kt" />
-        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" />
+        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/testlex.kt" />
+        <option value="$PROJECT_DIR$/src/testlex.kt" />
+        <option value="$PROJECT_DIR$/src/g.kt" />
+        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt" />
+        <option value="$PROJECT_DIR$/src/lexertest.kt" />
+        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt" />
       </list>
     </option>
   </component>
@@ -107,7 +144,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -152,6 +188,14 @@
               <item name="fuckyou" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="ckxc" type="462c0819:PsiDirectoryNode" />
+              <item name="ast" type="462c0819:PsiDirectoryNode" />
+              <item name="type" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="fuckyou" type="b2602c69:ProjectViewProjectNode" />
+              <item name="fuckyou" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="ckxc" type="462c0819:PsiDirectoryNode" />
               <item name="codegen" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -186,6 +230,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -206,7 +251,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Kotlin.cn.ckxily.ckxc.main.MainKt">
+  <component name="RunManager" selected="Kotlin.cn.ckxily.ckxc.lex.test.LexertestKt">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
@@ -236,6 +281,16 @@
       <option name="MAIN_CLASS_NAME" value="MainKt" />
       <option name="WORKING_DIRECTORY" />
     </configuration>
+    <configuration name="cn.ckxily.ckxc.lex.test.LexertestKt" type="JetRunConfigurationType" factoryName="Kotlin" temporary="true" nameIsGenerated="true">
+      <module name="fuckyou" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" value="cn.ckxily.ckxc.lex.test.LexertestKt" />
+      <option name="WORKING_DIRECTORY" />
+    </configuration>
     <configuration name="cn.ckxily.ckxc.main.MainKt" type="JetRunConfigurationType" factoryName="Kotlin" temporary="true" nameIsGenerated="true">
       <module name="fuckyou" />
       <option name="VM_PARAMETERS" />
@@ -253,9 +308,11 @@
     <list>
       <item itemvalue="Kotlin.MainKt" />
       <item itemvalue="Kotlin.cn.ckxily.ckxc.main.MainKt" />
+      <item itemvalue="Kotlin.cn.ckxily.ckxc.lex.test.LexertestKt" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.cn.ckxily.ckxc.lex.test.LexertestKt" />
         <item itemvalue="Kotlin.cn.ckxily.ckxc.main.MainKt" />
         <item itemvalue="Kotlin.MainKt" />
       </list>
@@ -284,15 +341,15 @@
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.44444445" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.6926272" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14635417" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="UI Designer" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.49117342" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -305,7 +362,107 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="5" />
+    </breakpoint-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>srcCode[index]</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>idKwdMap</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>&quot;${'a'..'z'}${'A'..'Z'}${'0'..'9'}&quot;</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>allowedChars</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1058">
+          <caret line="46" selection-start-line="46" selection-end-line="46" />
+          <folding>
+            <element signature="e#33#110#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="598">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1771">
+          <caret line="77" column="28" selection-start-line="77" selection-start-column="28" selection-end-line="77" selection-end-column="28" />
+          <folding>
+            <element signature="e#29#122#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+          <folding>
+            <element signature="e#29#135#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="69">
+          <caret line="3" column="35" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+          <folding>
+            <element signature="e#29#122#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1633">
+          <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+          <folding>
+            <element signature="e#33#110#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1863">
+          <caret line="81" lean-forward="true" selection-start-line="81" selection-end-line="81" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1380">
@@ -498,16 +655,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.kt" />
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1380">
-          <caret line="60" selection-start-line="60" selection-end-line="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/err/err.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="299">
@@ -515,37 +662,71 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1380">
+          <caret line="60" selection-start-line="60" selection-end-line="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/testlex" />
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/testlex.kt" />
+    <entry file="file://$PROJECT_DIR$/src/testlex.kt" />
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/HashMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12374">
+          <caret line="579" selection-start-line="579" selection-end-line="579" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        <state relative-caret-position="69">
+          <caret line="5" selection-start-line="5" selection-end-line="5" />
           <folding>
             <element signature="e#29#135#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt">
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1863">
-          <caret line="81" lean-forward="true" selection-start-line="81" selection-end-line="81" />
+        <state relative-caret-position="23">
+          <caret line="77" column="28" selection-start-line="77" selection-start-column="28" selection-end-line="77" selection-end-column="28" />
+          <folding>
+            <element signature="e#29#122#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1633">
-          <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
+        <state relative-caret-position="193">
+          <caret line="46" selection-start-line="46" selection-end-line="46" />
           <folding>
             <element signature="e#33#110#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="3" column="35" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+        <state relative-caret-position="262">
+          <caret line="31" column="11" lean-forward="true" selection-start-line="31" selection-start-column="11" selection-end-line="31" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lexertest.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="49" column="17" selection-start-line="49" selection-start-column="17" selection-end-line="49" selection-end-column="17" />
         </state>
       </provider>
     </entry>

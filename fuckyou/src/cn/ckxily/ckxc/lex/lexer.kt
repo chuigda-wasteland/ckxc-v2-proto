@@ -3,16 +3,22 @@ package cn.ckxily.ckxc.lex
 import cn.ckxily.ckxc.err.assertionFailed
 
 internal class LexerStateMachine(private val srcCode: String) {
+	private val lowerCaseLetter: String = "abcdefghijklmnopqrstuvwxyz"
+	private val upperCaseLetter: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	private val number: String = "1234567890"
+	private val symbols: String = ".,:;+-*/=<>{}[]()!"
+
 	private var index: Int = 0
 	private var cachedTokens: MutableList<Token> = ArrayList()
 
 	private fun lexImpl() {
 		while (index < srcCode.length) {
 			when (srcCode[index]) {
-				in 'a'..'z' -> cachedTokens.add(lexIdentifier())
-				in 'A'..'Z' -> cachedTokens.add(lexIdentifier())
-				in '0'..'9' -> cachedTokens.add(lexNumber())
-				in ".,:+" -> cachedTokens.add(lexSymbol())
+				in lowerCaseLetter -> cachedTokens.add(lexIdentifier())
+				in upperCaseLetter -> cachedTokens.add(lexIdentifier())
+				in number -> cachedTokens.add(lexNumber())
+				in symbols -> cachedTokens.add(lexSymbol())
+				in " \n\t" -> index++
 				else -> error("character ${srcCode[index]} is not allowed")
 			}
 		}
@@ -21,23 +27,27 @@ internal class LexerStateMachine(private val srcCode: String) {
 
 	private fun lexIdentifier(): Token {
 		assert(srcCode[index].isLetter())
-		val idStr = lexFullString("${'a'..'z'}${'A'..'Z'}${'0'..'9'}_")
+		val idStr = lexFullString(lowerCaseLetter + upperCaseLetter + number)
 		return idKwdMap[idStr]?.let { Token(it) } ?: Token(TokenType.Id, idStr)
 	}
 
 	private fun lexNumber(): Token {
-		return Token(TokenType.Number, lexFullString(('0'..'9').toString()).toInt())
+		return Token(TokenType.Number, lexFullString(number).toInt())
 	}
 
 	private fun lexSymbol(): Token {
 		val symbolStr: String = when (srcCode[index]) {
-			in "+*/:;,.<>{}[]()" -> srcCode[index].toString()
+			in ".,:;+*/<>{}[]()" -> run {
+				++index
+				srcCode[index-1].toString()
+			}
 			'-' -> run {
 				if (index + 1 < srcCode.length && srcCode[index + 1] == '>') {
 					index += 2
 					"->"
 				}
 				else {
+					index++
 					"-"
 				}
 			}
@@ -47,12 +57,22 @@ internal class LexerStateMachine(private val srcCode: String) {
 					"=="
 				}
 				else {
+					index++
 					"="
+				}
+			}
+			'!' -> run {
+				if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
+					index += 2
+					"!="
+				}
+				else {
+					index++
+					"!"
 				}
 			}
 			else -> assertionFailed("No other characters allowed when lexing symbol") as String
 		}
-
 		return Token(idKwdMap[symbolStr]!!)
 	}
 
@@ -70,7 +90,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 	val tokens get() = cachedTokens
 
 	companion object {
-		val idKwdMap: Map<String, TokenType> = TokenType.values().map { it.name to it }.toMap()
+		val idKwdMap: Map<String, TokenType> = TokenType.values().map { it.str to it }.toMap()
 	}
 }
 
