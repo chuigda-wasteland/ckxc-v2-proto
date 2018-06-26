@@ -26,14 +26,9 @@ tailrec fun lookup(scope: Scope, name: String): List<Decl> {
 	return localResult
 }
 
-class Sema(var currentDeclContext: DeclContext,
-					 var currentScope: Scope,
-					 var topLevelDeclContext: DeclContext) {
-	init {
-		topLevelDeclContext = TransUnitDecl()
-		currentDeclContext = topLevelDeclContext
-		currentScope = Scope(null, 0, currentDeclContext)
-	}
+class Sema(var currentDeclContext: DeclContext = TransUnitDecl(),
+					 var currentScope: Scope = Scope(null, 0, currentDeclContext),
+					 var topLevelDeclContext: DeclContext = currentDeclContext) {
 
 	fun pushDeclContext(scope: Scope, declContext: DeclContext) {
 		assert(declContext.withinContext == currentDeclContext)
