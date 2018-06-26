@@ -5,6 +5,8 @@ import cn.ckxily.ckxc.lex.Lexer
 fun Array<String>.main() {
 	val lexer = Lexer()
 	val tokens = lexer.lex("""
+		class SomeClass {}
+
 		fn main(vi32 argc, vi8** argv): vi32 {
 			vi8 a, b;
 			if (argc != 3) {

@@ -25,6 +25,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		val name = currentToken().value as String
 		nextToken()
 		val varDecl = sema.actOnVarDecl(sema.currentScope, 0, name, type)
+		expectAndConsume(TokenType.Semicolon)
 		return varDecl
 	}
 
@@ -76,6 +77,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 		expect(TokenType.Id)
 		val name = currentToken().value!! as String
+		nextToken()
 
 		val classDecl = sema.actOnClass(sema.currentScope, 0, name)
 		parseClassFields(classDecl)
@@ -89,6 +91,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			ParseDecl()
 		}
 		sema.actOnTagFinishDefinition()
+		expectAndConsume(TokenType.RightBrace)
 	}
 
 	private fun ParseDecl(): Decl {
@@ -112,5 +115,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 }
 
 class Parser {
-
+	fun parse(tokens: List<Token>): TransUnitDecl {
+		return ParserStateMachine(tokens).ParseTransUnit()
+	}
 }

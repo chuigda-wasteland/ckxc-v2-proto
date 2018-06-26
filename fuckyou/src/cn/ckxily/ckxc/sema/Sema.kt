@@ -7,7 +7,7 @@ import java.util.TreeSet
 class Scope(val parent: Scope? = null,
 						var depth: Int,
 						var entity: DeclContext? = null,
-						var decls: MutableSet<Decl> = TreeSet()) {
+						var decls: MutableList<Decl> = ArrayList()) {
 	init {
 		depth = if (parent == null) 0 else parent.depth + 1
 	}
