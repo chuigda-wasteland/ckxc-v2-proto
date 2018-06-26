@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="36a8c96f-0c89-4961-807b-de4e4aea4c49" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/parser/Parser.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/lexer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Lexer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/test/lexertest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/test/lexertest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -21,7 +20,7 @@
       <file leaf-file-name="Codegen.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="655">
+            <state relative-caret-position="1311">
               <caret line="57" selection-start-line="57" selection-end-line="57" />
             </state>
           </provider>
@@ -30,8 +29,8 @@
       <file leaf-file-name="Token.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+            <state relative-caret-position="483">
+              <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -39,8 +38,8 @@
       <file leaf-file-name="Lexer.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Lexer.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1610">
-              <caret line="70" column="13" lean-forward="true" selection-start-line="70" selection-start-column="13" selection-end-line="70" selection-end-column="13" />
+            <state relative-caret-position="23">
+              <caret line="70" column="13" selection-start-line="70" selection-start-column="13" selection-end-line="70" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -48,8 +47,8 @@
       <file leaf-file-name="main.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="23">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
               <folding>
                 <element signature="e#29#135#0" expanded="true" />
               </folding>
@@ -57,23 +56,35 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Parser.kt" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Parser.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/parser/Parser.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1207">
-              <caret line="73" column="1" lean-forward="true" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
+            <state relative-caret-position="819">
+              <caret line="73" column="1" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Sema.kt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="724">
+              <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
               <folding>
-                <element signature="e#31#171#0" expanded="true" />
+                <element signature="e#29#122#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Sema.kt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+      <file leaf-file-name="Decl.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="92">
-              <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+            <state relative-caret-position="11">
+              <caret line="29" column="38" lean-forward="true" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
+              <folding>
+                <element signature="e#33#110#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -97,7 +108,6 @@
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/err.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/err/err.kt" />
-        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/testlex.kt" />
         <option value="$PROJECT_DIR$/src/testlex.kt" />
@@ -108,8 +118,9 @@
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/test/lexertest.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/main/parser.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/parser/parser.kt" />
-        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" />
         <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/parser/Parser.kt" />
+        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt" />
+        <option value="$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt" />
       </list>
     </option>
   </component>
@@ -127,6 +138,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -220,7 +232,6 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -330,15 +341,16 @@
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.4382139" />
       <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4382139" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14166667" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14166667" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3297062" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="UI Designer" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.49117342" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.49117342" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -346,7 +358,6 @@
       <window_info anchor="bottom" id="Messages" order="7" weight="0.32917964" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -598,16 +609,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
-          <folding>
-            <element signature="e#33#110#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/test/lexertest.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="483">
@@ -647,48 +648,58 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/codegen/Codegen.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="655">
+        <state relative-caret-position="1311">
           <caret line="57" selection-start-line="57" selection-end-line="57" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Token.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+        <state relative-caret-position="483">
+          <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Lexer.kt">
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/parser/Parser.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1610">
-          <caret line="70" column="13" lean-forward="true" selection-start-line="70" selection-start-column="13" selection-end-line="70" selection-end-column="13" />
+        <state relative-caret-position="819">
+          <caret line="73" column="1" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/main/main.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="23">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
           <folding>
             <element signature="e#29#135#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/lex/Lexer.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+        <state relative-caret-position="23">
+          <caret line="70" column="13" selection-start-line="70" selection-start-column="13" selection-end-line="70" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/parser/Parser.kt">
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/ast/decl/Decl.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1207">
-          <caret line="73" column="1" lean-forward="true" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
+        <state relative-caret-position="11">
+          <caret line="29" column="38" lean-forward="true" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
           <folding>
-            <element signature="e#31#171#0" expanded="true" />
+            <element signature="e#33#110#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cn/ckxily/ckxc/sema/Sema.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="724">
+          <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
+          <folding>
+            <element signature="e#29#122#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -14,16 +14,16 @@ fun Array<String>.main() {
 			val class2 = ClassDecl("Light1kClass", class1)
 			val enum1 = EnumDecl("JoinedGroupChat", class1)
 			run {
-				val enumerator1 = EnumeratorDecl("Compiler1k", 0, enum1)
-				val enumerator2 = EnumeratorDecl("Suspended1k", 1, enum1)
+				val enumerator1 = EnumeratorDecl("Compiler1k", 0)
+				val enumerator2 = EnumeratorDecl("Suspended1k", 1)
 				with(enum1) {
 					addDecl(enumerator1)
 					addDecl(enumerator2)
 				}
 				null
 			}
-			val var1 = VarDecl("light1k", ClassType(class2, getNoSpecifier()), class1)
-			val var2 = VarDecl("activeGroup", EnumType(enum1, getCVSpecifiers()), class1)
+			val var1 = VarDecl("light1k", ClassType(class2, getNoSpecifier()))
+			val var2 = VarDecl("activeGroup", EnumType(enum1, getCVSpecifiers()))
 
 			with(class1) {
 				addDecl(class2)
@@ -33,7 +33,7 @@ fun Array<String>.main() {
 			}
 			null
 		}
-		val var3 = VarDecl("ice1k", ClassType(class1, getCSpecifier()), transUnit)
+		val var3 = VarDecl("ice1k", ClassType(class1, getCSpecifier()))
 
 		with(transUnit) {
 			addDecl(class1)

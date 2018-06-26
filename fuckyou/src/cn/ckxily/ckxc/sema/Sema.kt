@@ -12,56 +12,34 @@ class Scope(val parent: Scope? = null,
 		depth = if (parent == null) 0 else parent.depth + 1
 	}
 
-	fun addDecl(decl: Decl) = decls.add(decl)
-	fun removeDecl(decl: Decl) = decls.remove(decl)
+	fun addDecl(decl: Decl) {
+		decls.add(decl)
+		entity?.addDecl(decl)
+	}
+	fun removeDecl(decl: Decl) {
+		decls.remove(decl)
+		entity?.removeDecl(decl)
+	}
 	fun lookupLocally(name: String) = decls.filter { decl -> decl.nameStr?.equals(name) ?: false }
-	fun lookup(name: String) = lookup(this, name)
+	fun lookup(name: String) = dlLookup(this, name)
 }
 
-tailrec fun lookup(scope: Scope, name: String): List<Decl> {
+tailrec fun dlLookup(scope: Scope, name: String): List<Decl> {
 	val localResult = scope.lookupLocally(name)
 	if (localResult.isEmpty() && scope.parent != null) {
-		return lookup(scope.parent, name)
+		return dlLookup(scope.parent, name)
 	}
 	return localResult
 }
 
-class Sema(var currentDeclContext: DeclContext = TransUnitDecl(),
-					 var currentScope: Scope = Scope(null, 0, currentDeclContext),
-					 var topLevelDeclContext: DeclContext = currentDeclContext) {
-
-	fun pushDeclContext(scope: Scope, declContext: DeclContext) {
-		assert(declContext.withinContext == currentDeclContext)
-		currentDeclContext = declContext
-		scope.entity = currentDeclContext
-	}
-
-	fun popDeclContext(): DeclContext {
-		val popedContext = currentDeclContext
-		currentDeclContext = currentDeclContext.withinContext!!
-		return popedContext
-	}
-
-	fun pushScope() {
-		currentScope = Scope(currentScope, currentScope.depth+1)
+class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
+					 var currentScope: Scope = Scope(null, 0, topLevelDeclContext)) {
+	fun pushScope(declContext: DeclContext? = null) {
+		currentScope = Scope(currentScope, currentScope.depth+1, declContext)
 	}
 
 	fun popScope() {
 		currentScope = currentScope.parent!!
-	}
-
-	fun pushOnScopeChains(decl: Decl, scope: Scope, addToContext: Boolean) {
-		if (addToContext) {
-			currentDeclContext.addDecl(decl)
-		}
-		scope.addDecl(decl)
-	}
-
-	fun removeFromScopeChains(decl: Decl, scope: Scope, removeFromContext: Boolean) {
-		if (removeFromContext) {
-			currentDeclContext.removeDecl(decl)
-		}
-		scope.removeDecl(decl)
 	}
 
 	fun checkDuplicate(scope: Scope, nameStr: String) {
@@ -72,38 +50,38 @@ class Sema(var currentDeclContext: DeclContext = TransUnitDecl(),
 
 	fun actOnVarDecl(scope: Scope, atLine: Int, name: String, type: Type, addToContext: Boolean): VarDecl {
 		checkDuplicate(scope, name)
-		val varDecl = VarDecl(name, type, currentDeclContext)
-		pushOnScopeChains(varDecl, scope, addToContext)
+		val varDecl = VarDecl(name, type)
+		scope.addDecl(varDecl)
 		return varDecl
 	}
 
 	fun actOnClass(scope: Scope, atLine: Int, name: String, addToContext: Boolean): ClassDecl {
 		checkDuplicate(scope, name)
-		val classDecl = ClassDecl(name, currentDeclContext)
-		pushOnScopeChains(classDecl, scope, addToContext)
+		val classDecl = ClassDecl(name)
+		scope.addDecl(classDecl)
 		return classDecl
 	}
 
 	fun actOnEnum(scope: Scope, atLine: Int, name: String, addToContext: Boolean): EnumDecl {
 		checkDuplicate(scope, name)
-		val enumDecl = EnumDecl(name, currentDeclContext)
-		pushOnScopeChains(enumDecl, scope, addToContext)
+		val enumDecl = EnumDecl(name)
+		scope.addDecl(enumDecl)
 		return enumDecl
 	}
 
 	fun actOnTagStartDefinition(scope: Scope, tagDecl: Decl) {
-		pushDeclContext(scope, tagDecl as DeclContext)
+		pushScope(tagDecl as DeclContext)
 	}
 
 	fun actOnTagFinishDefinition() {
-		popDeclContext()
+		popScope()
 	}
 
 	fun actOnEnumarator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
 		checkDuplicate(scope, name)
 		val declContext = enumDecl as DeclContext
-		val enumerator = EnumeratorDecl(name, init?: 0, declContext)
-		pushOnScopeChains(enumerator, scope, true)
+		val enumerator = EnumeratorDecl(name, init?: 0)
+		scope.addDecl(enumerator)
 		return enumerator
 	}
 }
