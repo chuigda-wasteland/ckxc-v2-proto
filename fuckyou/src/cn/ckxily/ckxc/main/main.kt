@@ -9,10 +9,10 @@ fun Array<String>.main() {
 	val transUnit = TransUnitDecl()
 
 	run {
-		val class1 = ClassDecl("Ice1kClass", transUnit)
+		val class1 = ClassDecl("Ice1kClass")
 		run {
-			val class2 = ClassDecl("Light1kClass", class1)
-			val enum1 = EnumDecl("JoinedGroupChat", class1)
+			val class2 = ClassDecl("Light1kClass")
+			val enum1 = EnumDecl("JoinedGroupChat")
 			run {
 				val enumerator1 = EnumeratorDecl("Compiler1k", 0)
 				val enumerator2 = EnumeratorDecl("Suspended1k", 1)
