@@ -17,6 +17,7 @@ enum class BuiltinTypeId(val str: String) {
 	Int8("8bit Integer"),
 	Int16("16bit Integer"),
 	Int32("32bit Integer"),
+	Int64("64bit Integer"),
 	Float("Float")
 }
 

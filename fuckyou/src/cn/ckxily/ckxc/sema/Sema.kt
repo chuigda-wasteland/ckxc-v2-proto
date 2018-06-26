@@ -48,28 +48,28 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		}
 	}
 
-	fun actOnVarDecl(scope: Scope, atLine: Int, name: String, type: Type, addToContext: Boolean): VarDecl {
+	fun actOnVarDecl(scope: Scope, atLine: Int, name: String, type: Type): VarDecl {
 		checkDuplicate(scope, name)
 		val varDecl = VarDecl(name, type)
 		scope.addDecl(varDecl)
 		return varDecl
 	}
 
-	fun actOnClass(scope: Scope, atLine: Int, name: String, addToContext: Boolean): ClassDecl {
+	fun actOnClass(scope: Scope, atLine: Int, name: String): ClassDecl {
 		checkDuplicate(scope, name)
 		val classDecl = ClassDecl(name)
 		scope.addDecl(classDecl)
 		return classDecl
 	}
 
-	fun actOnEnum(scope: Scope, atLine: Int, name: String, addToContext: Boolean): EnumDecl {
+	fun actOnEnum(scope: Scope, atLine: Int, name: String): EnumDecl {
 		checkDuplicate(scope, name)
 		val enumDecl = EnumDecl(name)
 		scope.addDecl(enumDecl)
 		return enumDecl
 	}
 
-	fun actOnTagStartDefinition(scope: Scope, tagDecl: Decl) {
+	fun actOnTagStartDefinition(tagDecl: Decl) {
 		pushScope(tagDecl as DeclContext)
 	}
 

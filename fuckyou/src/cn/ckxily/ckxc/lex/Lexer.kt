@@ -6,7 +6,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 	private val lowerCaseLetter: String = "abcdefghijklmnopqrstuvwxyz"
 	private val upperCaseLetter: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	private val number: String = "1234567890"
-	private val symbols: String = ".,:;+-*/=<>{}[]()!"
+	private val symbols: String = ".,:;+-*/=<>{}[]()!&"
 
 	private var index: Int = 0
 	private var cachedTokens: MutableList<Token> = ArrayList()
@@ -37,7 +37,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 
 	private fun lexSymbol(): Token {
 		val symbolStr: String = when (srcCode[index]) {
-			in ".,:;+*/<>{}[]()" -> run {
+			in ".,:;+*/<>{}[]()&" -> run {
 				++index
 				srcCode[index-1].toString()
 			}
