@@ -12,6 +12,10 @@ fun Array<String>.main() {
 		vi8 a;
 		vi8 const** b;
 		class ClassC {
+			enum EnumE {
+				Enumerator1 = 3,
+				Enumerator2 = 5
+			}
 			class NestedClassD {
 				vi8 volatile* const* const volatile e;
 			}

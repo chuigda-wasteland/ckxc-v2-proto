@@ -70,7 +70,37 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	}
 
 	private fun parseEnumDecl(): EnumDecl {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		assert(currentToken().tokenType == TokenType.Enum)
+		nextToken()
+
+		expect(TokenType.Id)
+		val name = currentToken().value!! as String
+		nextToken()
+
+		val enumDecl = sema.actOnEnum(sema.currentScope, 0, name)
+		parseEnumerators(enumDecl)
+		return enumDecl
+	}
+
+	private fun parseEnumerators(enumDecl: EnumDecl) {
+		expectAndConsume(TokenType.LeftBrace)
+		sema.actOnTagStartDefinition(enumDecl)
+		while (currentToken().tokenType != TokenType.RightBrace) {
+			expect(TokenType.Id)
+			val name = currentToken().value!! as String
+			nextToken()
+			expectAndConsume(TokenType.Eq)
+			expect(TokenType.Number)
+			val value = currentToken().value!! as Int
+			nextToken()
+			sema.actOnEnumarator(sema.currentScope, enumDecl, name, value)
+
+			if (currentToken().tokenType == TokenType.Comma) {
+				nextToken()
+			}
+		}
+		expectAndConsume(TokenType.RightBrace	)
+		sema.actOnTagFinishDefinition()
 	}
 
 	private fun parseClassDecl(): ClassDecl {
