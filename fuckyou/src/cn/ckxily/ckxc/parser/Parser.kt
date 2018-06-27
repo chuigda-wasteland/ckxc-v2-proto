@@ -12,7 +12,9 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			when (currentToken().tokenType) {
 				TokenType.Class -> parseClassDecl()
 				TokenType.Enum -> parseEnumDecl()
-				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64 -> parseTopLevelVarDecl()
+				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id
+					-> parseTopLevelVarDecl()
+				TokenType.LeftParen -> error("Structual binding not allowed at top level of program")
 				else -> error("Token ${currentToken()} not allowed at top level of program")
 			}
 		}
@@ -94,8 +96,33 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expectAndConsume(TokenType.RightBrace)
 	}
 
-	private fun ParseDecl(): Decl {
-		return null!!
+	private fun ParseDecl(): Decl =
+		when (currentToken().tokenType) {
+			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
+				val varDecl = parseVarDecl()
+				expectAndConsume(TokenType.Semicolon)
+				varDecl
+			}
+			TokenType.LeftParen -> {
+				val structualBinding = parseStructualBinding()
+				expectAndConsume(TokenType.Semicolon)
+				structualBinding
+			}
+			TokenType.Class -> parseClassDecl()
+			TokenType.Enum -> parseEnumDecl()
+			else -> error("Unexpected token ${currentToken()}, expected vi8, vi16, vi32, vi64, vr32, class, enum or id")
+		}
+
+	private fun parseStructualBinding(): Decl {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
+
+	private fun parseVarDecl(): VarDecl {
+		val type = parseType()
+		expect(TokenType.Id)
+		val name = currentToken().value as String
+		nextToken()
+		return sema.actOnVarDecl(sema.currentScope, 0, name, type)
 	}
 
 	private fun expect(tokenType: TokenType) {
