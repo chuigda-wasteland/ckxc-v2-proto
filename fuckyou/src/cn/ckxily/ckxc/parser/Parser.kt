@@ -9,7 +9,7 @@ import cn.ckxily.ckxc.sema.Sema
 class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
 	fun ParseTransUnit(): TransUnitDecl {
 		while (currentToken().tokenType != TokenType.EOI) {
-			when (currentToken().tokenType) {
+			val thisDecl = when (currentToken().tokenType) {
 				TokenType.Class -> parseClassDecl()
 				TokenType.Enum -> parseEnumDecl()
 				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id
@@ -17,6 +17,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 				TokenType.LeftParen -> error("Structual binding not allowed at top level of program")
 				else -> error("Token ${currentToken()} not allowed at top level of program")
 			}
+			sema.actOnGlobalDecl(thisDecl)
 		}
 		return sema.topLevelDeclContext as TransUnitDecl
 	}
@@ -26,7 +27,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expect(TokenType.Id)
 		val name = currentToken().value as String
 		nextToken()
-		val varDecl = sema.actOnVarDecl(sema.currentScope, 0, name, type)
+		val varDecl = sema.actOnVarDecl(sema.currentScope, name, type)
 		expectAndConsume(TokenType.Semicolon)
 		return varDecl
 	}
@@ -77,14 +78,14 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		val name = currentToken().value!! as String
 		nextToken()
 
-		val enumDecl = sema.actOnEnum(sema.currentScope, 0, name)
+		val enumDecl = sema.actOnEnum(sema.currentScope, name)
 		parseEnumerators(enumDecl)
 		return enumDecl
 	}
 
 	private fun parseEnumerators(enumDecl: EnumDecl) {
 		expectAndConsume(TokenType.LeftBrace)
-		sema.actOnTagStartDefinition(enumDecl)
+		sema.actOnTagStartDefinition()
 		while (currentToken().tokenType != TokenType.RightBrace) {
 			expect(TokenType.Id)
 			val name = currentToken().value!! as String
@@ -93,7 +94,8 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			expect(TokenType.Number)
 			val value = currentToken().value!! as Int
 			nextToken()
-			sema.actOnEnumarator(sema.currentScope, enumDecl, name, value)
+			val enumerator = sema.actOnEnumarator(sema.currentScope, enumDecl, name, value)
+			sema.actOnFieldDecl(enumDecl, enumerator)
 
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
@@ -111,16 +113,16 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		val name = currentToken().value!! as String
 		nextToken()
 
-		val classDecl = sema.actOnClass(sema.currentScope, 0, name)
+		val classDecl = sema.actOnClass(sema.currentScope, name)
 		parseClassFields(classDecl)
 		return classDecl
 	}
 
 	private fun parseClassFields(classDecl: ClassDecl) {
 		expectAndConsume(TokenType.LeftBrace)
-		sema.actOnTagStartDefinition(classDecl)
+		sema.actOnTagStartDefinition()
 		while (currentToken().tokenType != TokenType.RightBrace) {
-			ParseDecl()
+			sema.actOnFieldDecl(classDecl, ParseDecl())
 		}
 		sema.actOnTagFinishDefinition()
 		expectAndConsume(TokenType.RightBrace)
@@ -152,7 +154,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expect(TokenType.Id)
 		val name = currentToken().value as String
 		nextToken()
-		return sema.actOnVarDecl(sema.currentScope, 0, name, type)
+		return sema.actOnVarDecl(sema.currentScope, name, type)
 	}
 
 	private fun expect(tokenType: TokenType) {
