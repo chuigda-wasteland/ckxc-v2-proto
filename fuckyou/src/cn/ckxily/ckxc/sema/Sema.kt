@@ -31,46 +31,41 @@ tailrec fun dlLookup(scope: Scope, name: String): List<Decl> {
 class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 					 var currentDeclContext: DeclContext = topLevelDeclContext,
 					 var currentScope: Scope = Scope(null, 0)) {
-	fun pushScope() {
+	private fun pushScope() {
 		currentScope = Scope(currentScope, currentScope.depth+1)
 	}
 
-	fun popScope() {
+	private fun popScope() {
 		currentScope = currentScope.parent!!
 	}
 
-	fun checkDuplicate(scope: Scope, nameStr: String) {
+	private fun checkDuplicate(scope: Scope, nameStr: String) {
 		if (scope.lookupLocally(nameStr).isNotEmpty()) {
 			error("redefinition of ${nameStr}")
 		}
 	}
 
-	fun actOnGlobalDecl(decl: Decl) {
-		topLevelDeclContext.addDecl(decl)
-	}
-
-	fun actOnFieldDecl(declContext: DeclContext, decl: Decl) {
+	fun actOnDeclInContext(decl: Decl, declContext: DeclContext = currentDeclContext) {
 		declContext.addDecl(decl)
 	}
 
+	fun actOnDeclInScope(decl: Decl, scope: Scope = currentScope) {
+		scope.addDecl(decl)
+	}
+
 	fun actOnVarDecl(scope: Scope, name: String, type: Type): VarDecl {
-		val varDecl = VarDecl(name, type)
-		scope.addDecl(varDecl)
-		return varDecl;
+		checkDuplicate(scope, name)
+		return VarDecl(name, type)
 	}
 
 	fun actOnClass(scope: Scope, name: String): ClassDecl {
 		checkDuplicate(scope, name)
-		val classDecl = ClassDecl(name)
-		scope.addDecl(classDecl)
-		return classDecl
+		return ClassDecl(name)
 	}
 
 	fun actOnEnum(scope: Scope, name: String): EnumDecl {
 		checkDuplicate(scope, name)
-		val enumDecl = EnumDecl(name)
-		scope.addDecl(enumDecl)
-		return enumDecl
+		return EnumDecl(name)
 	}
 
 	fun actOnTagStartDefinition() {
@@ -84,8 +79,8 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnEnumarator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
 		checkDuplicate(scope, name)
 		val enumerator = EnumeratorDecl(name, init?: 0)
-		scope.addDecl(enumerator)
-		actOnFieldDecl(enumDecl, enumerator)
+		actOnDeclInScope(enumerator)
+		actOnDeclInContext(enumerator, enumDecl)
 		return enumerator
 	}
 }

@@ -12,24 +12,18 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			val thisDecl = when (currentToken().tokenType) {
 				TokenType.Class -> parseClassDecl()
 				TokenType.Enum -> parseEnumDecl()
-				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id
-					-> parseTopLevelVarDecl()
+				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
+					val decl = parseVarDecl()
+					expectAndConsume(TokenType.Semicolon)
+					decl
+				}
 				TokenType.LeftParen -> error("Structual binding not allowed at top level of program")
 				else -> error("Token ${currentToken()} not allowed at top level of program")
 			}
-			sema.actOnGlobalDecl(thisDecl)
+			sema.actOnDeclInScope(thisDecl, sema.currentScope)
+			sema.actOnDeclInContext(thisDecl, sema.currentDeclContext)
 		}
 		return sema.topLevelDeclContext as TransUnitDecl
-	}
-
-	private fun parseTopLevelVarDecl(): VarDecl {
-		val type = parseType()
-		expect(TokenType.Id)
-		val name = currentToken().value as String
-		nextToken()
-		val varDecl = sema.actOnVarDecl(sema.currentScope, name, type)
-		expectAndConsume(TokenType.Semicolon)
-		return varDecl
 	}
 
 	private fun parseType(): Type {
@@ -95,8 +89,6 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			val value = currentToken().value!! as Int
 			nextToken()
 			val enumerator = sema.actOnEnumarator(sema.currentScope, enumDecl, name, value)
-			sema.actOnFieldDecl(enumDecl, enumerator)
-
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
 			}
@@ -122,13 +114,15 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expectAndConsume(TokenType.LeftBrace)
 		sema.actOnTagStartDefinition()
 		while (currentToken().tokenType != TokenType.RightBrace) {
-			sema.actOnFieldDecl(classDecl, ParseDecl())
+			val decl = parseDecl()
+			sema.actOnDeclInScope(decl)
+			sema.actOnDeclInContext(decl, classDecl)
 		}
 		sema.actOnTagFinishDefinition()
 		expectAndConsume(TokenType.RightBrace)
 	}
 
-	private fun ParseDecl(): Decl =
+	private fun parseDecl(): Decl =
 		when (currentToken().tokenType) {
 			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
 				val varDecl = parseVarDecl()
