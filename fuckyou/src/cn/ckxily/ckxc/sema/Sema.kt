@@ -76,7 +76,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		popScope()
 	}
 
-	fun actOnEnumarator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
+	fun actOnEnumerator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
 		checkDuplicate(scope, name)
 		val enumerator = EnumeratorDecl(name, init?: 0)
 		actOnDeclInScope(enumerator)

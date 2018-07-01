@@ -42,8 +42,8 @@ sealed class Type(var typeId: TypeId, var specifiers: TypeSpecifiers) {
 	abstract override fun toString(): String
 }
 
-class BuiltinType(val builinTypeId: BuiltinTypeId, specifiers: TypeSpecifiers) : Type(TypeId.Builtin, specifiers) {
-	override fun toString() = "${builinTypeId.str} $specifiers"
+class BuiltinType(val builtinTypeId: BuiltinTypeId, specifiers: TypeSpecifiers) : Type(TypeId.Builtin, specifiers) {
+	override fun toString() = "${builtinTypeId.str} $specifiers"
 }
 
 class PointerType(var pointee: Type, specifiers: TypeSpecifiers) : Type(TypeId.Pointer, specifiers) {

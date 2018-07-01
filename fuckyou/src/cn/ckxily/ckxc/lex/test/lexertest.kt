@@ -18,6 +18,6 @@ fun Array<String>.main() {
 		}
 	""".trimIndent())
 	for (token in tokens) {
-		println(token.toString())
+		println(token)
 	}
 }

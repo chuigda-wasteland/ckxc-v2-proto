@@ -89,7 +89,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			expect(TokenType.Number)
 			val value = currentToken().value!! as Int
 			nextToken()
-			val enumerator = sema.actOnEnumarator(sema.currentScope, enumDecl, name, value)
+			val enumerator = sema.actOnEnumerator(sema.currentScope, enumDecl, name, value)
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
 			}
