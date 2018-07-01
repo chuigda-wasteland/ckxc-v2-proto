@@ -1,6 +1,9 @@
 package cn.ckxily.ckxc.lex
 
 import cn.ckxily.ckxc.err.assertionFailed
+import cn.ckxily.ckxc.err.error
+
+import kotlin.error as _aliased_error_
 
 internal class LexerStateMachine(private val srcCode: String) {
 	private var index: Int = 0
@@ -32,39 +35,33 @@ internal class LexerStateMachine(private val srcCode: String) {
 
 	private fun lexSymbol(): Token {
 		val symbolStr: String = when (srcCode[index]) {
-			in ".,:;+*/<>{}[]()&" -> run {
+			in ".,:;+*/<>{}[]()&" -> {
 				++index
 				srcCode[index-1].toString()
 			}
-			'-' -> run {
-				if (index + 1 < srcCode.length && srcCode[index + 1] == '>') {
-					index += 2
-					"->"
-				}
-				else {
-					index++
-					"-"
-				}
+			'-' -> if (index + 1 < srcCode.length && srcCode[index + 1] == '>') {
+				index += 2
+				"->"
 			}
-			'=' -> run {
-				if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
-					index += 2
-					"=="
-				}
-				else {
-					index++
-					"="
-				}
+			else {
+				index++
+				"-"
 			}
-			'!' -> run {
-				if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
-					index += 2
-					"!="
-				}
-				else {
-					index++
-					"!"
-				}
+			'=' -> if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
+				index += 2
+				"=="
+			}
+			else {
+				index++
+				"="
+			}
+			'!' -> if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
+				index += 2
+				"!="
+			}
+			else {
+				index++
+				"!"
 			}
 			else -> assertionFailed("No other characters allowed when lexing symbol")
 		}

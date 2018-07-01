@@ -2,6 +2,9 @@ package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.err.error
+
+import kotlin.error as _aliased_error_
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,
@@ -41,7 +44,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 
 	private fun checkDuplicate(scope: Scope, nameStr: String) {
 		if (scope.lookupLocally(nameStr).isNotEmpty()) {
-			error("redefinition of ${nameStr}")
+			error("redefinition of $nameStr")
 		}
 	}
 
