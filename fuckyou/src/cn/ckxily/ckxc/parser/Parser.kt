@@ -17,6 +17,11 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 					expectAndConsume(TokenType.Semicolon)
 					decl
 				}
+				TokenType.Func -> {
+					val decl = parseFuncDecl()
+					expectAndConsume(TokenType.Semicolon)
+					decl
+				}
 				TokenType.LeftParen -> error("Structual binding not allowed at top level of program")
 				else -> error("Token ${currentToken()} not allowed at top level of program")
 			}
@@ -149,6 +154,28 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		val name = currentToken().value as String
 		nextToken()
 		return sema.actOnVarDecl(sema.currentScope, name, type)
+	}
+
+	private fun parseFuncDecl(): FuncDecl {
+		assert(currentToken().tokenType == TokenType.Func)
+		nextToken()
+		expect(TokenType.Id)
+		val name = currentToken().value as String
+		nextToken()
+		val funcDecl =  sema.actOnFuncDecl(sema.currentScope, name)
+		expectAndConsume(TokenType.LeftParen)
+		while (currentToken().tokenType != TokenType.RightParen) {
+			val type = parseType()
+			expect(TokenType.Id)
+			val name = currentToken().value as String
+			nextToken()
+			sema.actOnParam(sema.currentScope, funcDecl, name, type)
+			if (currentToken().tokenType == TokenType.Comma) {
+				nextToken()
+			}
+		}
+		expectAndConsume(TokenType.RightParen)
+		return funcDecl;
 	}
 
 	private fun expect(tokenType: TokenType) {

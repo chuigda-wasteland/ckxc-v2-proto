@@ -1,7 +1,10 @@
 package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.type.BuiltinType
+import cn.ckxily.ckxc.ast.type.BuiltinTypeId
 import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.type.getNoSpecifier
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,
@@ -82,5 +85,21 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		actOnDeclInScope(enumerator)
 		actOnDeclInContext(enumerator, enumDecl)
 		return enumerator
+	}
+
+	fun actOnFuncDecl(scope: Scope, name: String): FuncDecl {
+		checkDuplicate(scope, name)
+		return FuncDecl(name, ArrayList(), BuiltinType(BuiltinTypeId.Int8, getNoSpecifier()), null)
+	}
+
+	fun actOnParam(scope: Scope, funcDecl: FuncDecl, name: String, type: Type): VarDecl {
+		checkDuplicate(scope, name)
+		val varDecl = VarDecl(name, type)
+		funcDecl.paramList.add(varDecl)
+		return varDecl
+	}
+
+	fun actOnStratFuncDef(scope: Scope, funcDecl: FuncDecl, compoundStmt: Any?) {
+		/// TODO not implemented
 	}
 }

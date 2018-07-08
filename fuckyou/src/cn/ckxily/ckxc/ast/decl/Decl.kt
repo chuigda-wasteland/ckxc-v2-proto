@@ -6,6 +6,7 @@ import cn.ckxily.ckxc.codegen.ASTConsumer
 enum class DeclKind(val str: String) {
 	TransUnitDecl("Translation Unit"),
 	VarDecl("Variable Declaration"),
+	FuncDecl("Function Declaration"),
 	EnumDecl("Enumeration Declaration"),
 	EnumeratorDecl("Enumerator"),
 	ClassDecl("Class Declaration"),
@@ -57,4 +58,10 @@ class ClassDecl(override val nameStr: String)
 class EnumDecl(override val nameStr: String)
 	: DeclContext(DeclContextKind.EnumContext, DeclKind.EnumDecl) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumDecl(this)
+}
+
+class FuncDecl(override val nameStr: String, val paramList: MutableList<VarDecl>, val retType: Type,
+							 var funcBody: Any? /* TODO: add statement system */)
+	: Decl(DeclKind.FuncDecl) {
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitFuncDecl(this)
 }

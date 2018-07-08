@@ -8,6 +8,7 @@ interface ASTConsumer {
 	fun visitEnumDecl(enumDecl: EnumDecl): Any?
 	fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any?
 	fun visitClassDecl(classDecl: ClassDecl): Any?
+	fun visitFuncDecl(funcDecl: FuncDecl): Any?
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
@@ -55,6 +56,17 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 		for (subDecl in classDecl.decls) subDecl.accept(this)
 		indentation--
 		indent(); println("Class declaration end!")
+		return null
+	}
+
+	override fun visitFuncDecl(funcDecl: FuncDecl): Any? {
+		indent(); println("Function declaration begin!")
+		indent(); println("function ${funcDecl.nameStr}")
+		indentation++
+		for (paramDecl in funcDecl.paramList) paramDecl.accept(this)
+		indentation--
+		indent(); println("Return type is ${funcDecl.retType}")
+		indent(); println("Function declaration end!")
 		return null
 	}
 }

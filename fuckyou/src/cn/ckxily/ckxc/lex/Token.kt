@@ -15,7 +15,7 @@ enum class TokenType(val str: String) {
 	Enum("enum"),
 	Const("const"),
 	Volatile("volatile"),
-	Func("fn"),
+	Func("func"),
 	Number("Number\$"),
 	Id("Identifier\$"),
 	Colon(":"),
