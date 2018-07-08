@@ -1,13 +1,11 @@
 package cn.ckxily.ckxc.lex
 
 import cn.ckxily.ckxc.err.assertionFailed
+import cn.ckxily.ckxc.err.error
+
+import kotlin.error as _aliased_error_
 
 internal class LexerStateMachine(private val srcCode: String) {
-	private val lowerCaseLetter: String = "abcdefghijklmnopqrstuvwxyz"
-	private val upperCaseLetter: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	private val number: String = "1234567890"
-	private val symbols: String = ".,:;+-*/=<>{}[]()!&"
-
 	private var index: Int = 0
 	private var cachedTokens: MutableList<Token> = ArrayList()
 
@@ -37,41 +35,35 @@ internal class LexerStateMachine(private val srcCode: String) {
 
 	private fun lexSymbol(): Token {
 		val symbolStr: String = when (srcCode[index]) {
-			in ".,:;+*/<>{}[]()&" -> run {
+			in ".,:;+*/<>{}[]()&" -> {
 				++index
 				srcCode[index-1].toString()
 			}
-			'-' -> run {
-				if (index + 1 < srcCode.length && srcCode[index + 1] == '>') {
-					index += 2
-					"->"
-				}
-				else {
-					index++
-					"-"
-				}
+			'-' -> if (index + 1 < srcCode.length && srcCode[index + 1] == '>') {
+				index += 2
+				"->"
 			}
-			'=' -> run {
-				if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
-					index += 2
-					"=="
-				}
-				else {
-					index++
-					"="
-				}
+			else {
+				index++
+				"-"
 			}
-			'!' -> run {
-				if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
-					index += 2
-					"!="
-				}
-				else {
-					index++
-					"!"
-				}
+			'=' -> if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
+				index += 2
+				"=="
 			}
-			else -> assertionFailed("No other characters allowed when lexing symbol") as String
+			else {
+				index++
+				"="
+			}
+			'!' -> if (index + 1 < srcCode.length && srcCode[index + 1] == '=') {
+				index += 2
+				"!="
+			}
+			else {
+				index++
+				"!"
+			}
+			else -> assertionFailed("No other characters allowed when lexing symbol")
 		}
 		return Token(idKwdMap[symbolStr]!!)
 	}
@@ -90,6 +82,11 @@ internal class LexerStateMachine(private val srcCode: String) {
 	val tokens get() = cachedTokens
 
 	companion object {
+		private const val lowerCaseLetter: String = "abcdefghijklmnopqrstuvwxyz"
+		private const val upperCaseLetter: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		private const val number: String = "1234567890"
+		private const val symbols: String = ".,:;+-*/=<>{}[]()!&"
+
 		val idKwdMap: Map<String, TokenType> = TokenType.values().map { it.str to it }.toMap()
 	}
 }

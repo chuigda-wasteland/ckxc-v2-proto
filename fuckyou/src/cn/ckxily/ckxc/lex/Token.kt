@@ -45,6 +45,6 @@ enum class TokenType(val str: String) {
 
 class Token(val tokenType: TokenType, val value: Any? = null) {
 	override fun toString(): String {
-		return "${tokenType} (${value ?: tokenType.str})"
+		return "$tokenType (${value ?: tokenType.str})"
 	}
 }

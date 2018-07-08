@@ -2,12 +2,15 @@ package cn.ckxily.ckxc.parser
 
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.type.*
+import cn.ckxily.ckxc.err.error
 import cn.ckxily.ckxc.lex.Token
 import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Sema
 
+import kotlin.error as _aliased_error_
+
 class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
-	fun ParseTransUnit(): TransUnitDecl {
+	fun parseTransUnit(): TransUnitDecl {
 		while (currentToken().tokenType != TokenType.EOI) {
 			val thisDecl = when (currentToken().tokenType) {
 				TokenType.Class -> parseClassDecl()
@@ -50,14 +53,12 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		}
 	}
 
-	@Suppress("UNREACHABLE_CODE")
 	private fun parseCustomType(): Type {
 		error("parseCustomType not implemented")
-		return null!!
 	}
 
 	private fun parseBuiltinType(): Type? {
-		val type =  when (currentToken().tokenType) {
+		val type = when (currentToken().tokenType) {
 			TokenType.Vi8 -> BuiltinType(BuiltinTypeId.Int8, getNoSpecifier())
 			TokenType.Vi16 -> BuiltinType(BuiltinTypeId.Int16, getNoSpecifier())
 			TokenType.Vi32 -> BuiltinType(BuiltinTypeId.Int32, getNoSpecifier())
@@ -93,12 +94,12 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			expect(TokenType.Number)
 			val value = currentToken().value!! as Int
 			nextToken()
-			val enumerator = sema.actOnEnumarator(sema.currentScope, enumDecl, name, value)
+			val enumerator = sema.actOnEnumerator(sema.currentScope, enumDecl, name, value)
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
 			}
 		}
-		expectAndConsume(TokenType.RightBrace	)
+		expectAndConsume(TokenType.RightBrace)
 		sema.actOnTagFinishDefinition()
 	}
 
@@ -128,23 +129,23 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	}
 
 	private fun parseDecl(): Decl =
-		when (currentToken().tokenType) {
-			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
-				val varDecl = parseVarDecl()
-				expectAndConsume(TokenType.Semicolon)
-				varDecl
+			when (currentToken().tokenType) {
+				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
+					val varDecl = parseVarDecl()
+					expectAndConsume(TokenType.Semicolon)
+					varDecl
+				}
+				TokenType.LeftParen -> {
+					val structuralBinding = parseStructuralBinding()
+					expectAndConsume(TokenType.Semicolon)
+					structuralBinding
+				}
+				TokenType.Class -> parseClassDecl()
+				TokenType.Enum -> parseEnumDecl()
+				else -> error("Unexpected token ${currentToken()}, expected vi8, vi16, vi32, vi64, vr32, class, enum or id")
 			}
-			TokenType.LeftParen -> {
-				val structualBinding = parseStructualBinding()
-				expectAndConsume(TokenType.Semicolon)
-				structualBinding
-			}
-			TokenType.Class -> parseClassDecl()
-			TokenType.Enum -> parseEnumDecl()
-			else -> error("Unexpected token ${currentToken()}, expected vi8, vi16, vi32, vi64, vr32, class, enum or id")
-		}
 
-	private fun parseStructualBinding(): Decl {
+	private fun parseStructuralBinding(): Decl {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
@@ -192,12 +193,12 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	}
 
 	private fun currentToken() = tokens[currentTokenIndex]
-	private fun peekOneToken() = tokens[currentTokenIndex+1]
+	private fun peekOneToken() = tokens[currentTokenIndex + 1]
 	private fun nextToken() = currentTokenIndex++
 }
 
 class Parser {
 	fun parse(tokens: List<Token>): TransUnitDecl {
-		return ParserStateMachine(tokens).ParseTransUnit()
+		return ParserStateMachine(tokens).parseTransUnit()
 	}
 }

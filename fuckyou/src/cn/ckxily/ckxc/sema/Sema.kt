@@ -5,6 +5,8 @@ import cn.ckxily.ckxc.ast.type.BuiltinType
 import cn.ckxily.ckxc.ast.type.BuiltinTypeId
 import cn.ckxily.ckxc.ast.type.Type
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
+import cn.ckxily.ckxc.err.error
+import kotlin.error as _aliased_error_
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,
@@ -44,7 +46,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 
 	private fun checkDuplicate(scope: Scope, nameStr: String) {
 		if (scope.lookupLocally(nameStr).isNotEmpty()) {
-			error("redefinition of ${nameStr}")
+			error("redefinition of $nameStr")
 		}
 	}
 
@@ -79,7 +81,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		popScope()
 	}
 
-	fun actOnEnumarator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
+	fun actOnEnumerator(scope: Scope, enumDecl: EnumDecl, name: String, init: Int?): EnumeratorDecl {
 		checkDuplicate(scope, name)
 		val enumerator = EnumeratorDecl(name, init?: 0)
 		actOnDeclInScope(enumerator)
