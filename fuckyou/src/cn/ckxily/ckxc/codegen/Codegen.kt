@@ -1,6 +1,7 @@
 package cn.ckxily.ckxc.codegen
 
 import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.stmt.CompoundStmt
 
 interface ASTConsumer {
 	fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any?
@@ -9,6 +10,7 @@ interface ASTConsumer {
 	fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any?
 	fun visitClassDecl(classDecl: ClassDecl): Any?
 	fun visitFuncDecl(funcDecl: FuncDecl): Any?
+	fun visitCompoundStmt(compoundStmt: CompoundStmt): Any?
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
@@ -67,6 +69,15 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 		indentation--
 		indent(); println("Return type is ${funcDecl.retType}")
 		indent(); println("Function declaration end!")
+		return null
+	}
+
+	override fun visitCompoundStmt(compoundStmt: CompoundStmt): Any? {
+		indent(); println("Compound statement begin!")
+		indentation++
+		for (stmt in compoundStmt.stmtList) stmt.accept(this)
+		indentation--
+		indent(); println("Compound statement end!")
 		return null
 	}
 }
