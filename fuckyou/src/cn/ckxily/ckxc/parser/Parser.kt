@@ -1,11 +1,14 @@
 package cn.ckxily.ckxc.parser
 
 import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.stmt.CompoundStmt
+import cn.ckxily.ckxc.ast.stmt.Stmt
 import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.err.error
 import cn.ckxily.ckxc.lex.Token
 import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Sema
+import kotlin.collections.ArrayList
 
 import kotlin.error as _aliased_error_
 
@@ -22,7 +25,9 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 				}
 				TokenType.Func -> {
 					val decl = parseFuncDecl()
-					expectAndConsume(TokenType.Semicolon)
+					if (decl.funcBody == null) {
+						expectAndConsume(TokenType.Semicolon)
+					}
 					decl
 				}
 				TokenType.LeftParen -> error("Structual binding not allowed at top level of program")
@@ -171,14 +176,31 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			expect(TokenType.Id)
 			val name = currentToken().value as String
 			nextToken()
-			sema.actOnParam(sema.currentScope, funcDecl, name, type)
+			val paramDecl = sema.actOnParam(sema.currentScope, funcDecl, name, type)
+			sema.actOnDeclInScope(paramDecl)
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
 			}
 		}
 		expectAndConsume(TokenType.RightParen)
+		if (currentToken().tokenType == TokenType.LeftBrace) {
+			parseFuncDef(funcDecl)
+		}
 		sema.actOnFinishParamList(sema.currentScope, funcDecl)
-		return funcDecl;
+		return funcDecl
+	}
+
+	private fun parseFuncDef(funcDecl: FuncDecl) {
+		assert(currentToken().tokenType == TokenType.LeftBrace)
+		nextToken()
+		val compoundStmt = CompoundStmt()
+		sema.actOnStartFuncDef()
+		while (currentToken().tokenType != TokenType.RightBrace) {
+			// @todo not implemented
+		}
+		expectAndConsume(TokenType.RightBrace)
+		sema.actOnFinishFuncDef()
+		funcDecl.funcBody = compoundStmt
 	}
 
 	private fun expect(tokenType: TokenType) {

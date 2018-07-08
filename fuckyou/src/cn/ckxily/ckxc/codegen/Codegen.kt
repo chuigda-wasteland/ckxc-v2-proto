@@ -68,6 +68,12 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 		for (paramDecl in funcDecl.paramList) paramDecl.accept(this)
 		indentation--
 		indent(); println("Return type is ${funcDecl.retType}")
+		if (funcDecl.funcBody != null) {
+			indent(); println("Function body!")
+			indentation++
+			funcDecl.funcBody!!.accept(this)
+			indentation--
+		}
 		indent(); println("Function declaration end!")
 		return null
 	}

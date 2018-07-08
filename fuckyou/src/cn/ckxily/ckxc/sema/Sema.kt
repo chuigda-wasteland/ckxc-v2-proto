@@ -112,4 +112,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnStratFuncDef(scope: Scope, funcDecl: FuncDecl, compoundStmt: Any?) {
 		/// TODO not implemented
 	}
+
+	fun actOnStartFuncDef() = pushScope()
+	fun actOnFinishFuncDef() = popScope()
 }

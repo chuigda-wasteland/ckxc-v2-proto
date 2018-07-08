@@ -1,6 +1,8 @@
 package cn.ckxily.ckxc.ast.decl
 
 import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.stmt.Stmt
+import cn.ckxily.ckxc.ast.stmt.CompoundStmt
 import cn.ckxily.ckxc.codegen.ASTConsumer
 
 enum class DeclKind(val str: String) {
@@ -61,7 +63,7 @@ class EnumDecl(override val nameStr: String)
 }
 
 class FuncDecl(override val nameStr: String, val paramList: MutableList<VarDecl>, val retType: Type,
-							 var funcBody: Any? /* TODO: add statement system */)
+							 var funcBody: CompoundStmt? = null)
 	: Decl(DeclKind.FuncDecl) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitFuncDecl(this)
 }
