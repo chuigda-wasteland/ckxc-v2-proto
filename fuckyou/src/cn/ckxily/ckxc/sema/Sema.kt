@@ -92,6 +92,14 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		return FuncDecl(name, ArrayList(), BuiltinType(BuiltinTypeId.Int8, getNoSpecifier()), null)
 	}
 
+	fun actOnStartParamList(scope: Scope, funcDecl: FuncDecl) {
+		pushScope()
+	}
+
+	fun actOnFinishParamList(scope: Scope, funcDecl: FuncDecl) {
+		popScope()
+	}
+
 	fun actOnParam(scope: Scope, funcDecl: FuncDecl, name: String, type: Type): VarDecl {
 		checkDuplicate(scope, name)
 		val varDecl = VarDecl(name, type)

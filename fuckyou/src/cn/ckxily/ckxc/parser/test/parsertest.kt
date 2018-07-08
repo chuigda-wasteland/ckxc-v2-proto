@@ -22,6 +22,6 @@ fun Array<String>.main() {
 			vr32 f;
 		}
 
-		func FuncFuck(vi8 va, vi16 const* const* const cpcpcb);
+		func FuncFuck(vi8 a, vi16 const* const* const b);
 	""".trimIndent())).accept(ASTPrinter())
 }

@@ -164,6 +164,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		nextToken()
 		val funcDecl =  sema.actOnFuncDecl(sema.currentScope, name)
 		expectAndConsume(TokenType.LeftParen)
+		sema.actOnStartParamList(sema.currentScope, funcDecl)
 		while (currentToken().tokenType != TokenType.RightParen) {
 			val type = parseType()
 			expect(TokenType.Id)
@@ -175,6 +176,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			}
 		}
 		expectAndConsume(TokenType.RightParen)
+		sema.actOnFinishParamList(sema.currentScope, funcDecl)
 		return funcDecl;
 	}
 
