@@ -1,16 +1,12 @@
 package cn.ckxily.ckxc.parser
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.stmt.CompoundStmt
-import cn.ckxily.ckxc.ast.stmt.Stmt
+import cn.ckxily.ckxc.ast.stmt.*
 import cn.ckxily.ckxc.ast.type.*
-import cn.ckxily.ckxc.err.error
+import cn.ckxily.ckxc.err.unrecoverableError
 import cn.ckxily.ckxc.lex.Token
 import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Sema
-import kotlin.collections.ArrayList
-
-import kotlin.error as _aliased_error_
 
 class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
 	fun parseTransUnit(): TransUnitDecl {
@@ -30,8 +26,8 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 					}
 					decl
 				}
-				TokenType.LeftParen -> error("Structual binding not allowed at top level of program")
-				else -> error("Token ${currentToken()} not allowed at top level of program")
+				TokenType.LeftParen -> unrecoverableError("Structual binding not allowed at top level of program")
+				else -> unrecoverableError("Token ${currentToken()} not allowed at top level of program")
 			}
 			sema.actOnDeclInScope(thisDecl, sema.currentScope)
 			sema.actOnDeclInContext(thisDecl, sema.currentDeclContext)
@@ -59,7 +55,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	}
 
 	private fun parseCustomType(): Type {
-		error("parseCustomType not implemented")
+		unrecoverableError("parseCustomType not implemented")
 	}
 
 	private fun parseBuiltinType(): Type? {
@@ -147,7 +143,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 				}
 				TokenType.Class -> parseClassDecl()
 				TokenType.Enum -> parseEnumDecl()
-				else -> error("Unexpected token ${currentToken()}, expected vi8, vi16, vi32, vi64, vr32, class, enum or id")
+				else -> unrecoverableError("Unexpected token ${currentToken()}, expected vi8, vi16, vi32, vi64, vr32, class, enum or id")
 			}
 
 	private fun parseStructuralBinding(): Decl {
@@ -163,6 +159,9 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	}
 
 	private fun parseFuncDecl(): FuncDecl {
+		/// @todo here is a dirty implementation.
+		/// I will give as much comment as possible to illustrate its behaviour.
+		/// Remember to refactor this.
 		assert(currentToken().tokenType == TokenType.Func)
 		nextToken()
 		expect(TokenType.Id)
@@ -170,19 +169,27 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		nextToken()
 		val funcDecl =  sema.actOnFuncDecl(sema.currentScope, name)
 		expectAndConsume(TokenType.LeftParen)
+		/// @todo
+		/// Now we enter a "param list scope" which is used for parameters.
 		sema.actOnStartParamList(sema.currentScope, funcDecl)
 		while (currentToken().tokenType != TokenType.RightParen) {
 			val type = parseType()
 			expect(TokenType.Id)
-			val name = currentToken().value as String
+			val paramName = currentToken().value as String
 			nextToken()
-			val paramDecl = sema.actOnParam(sema.currentScope, funcDecl, name, type)
+			val paramDecl = sema.actOnParam(sema.currentScope, funcDecl, paramName, type)
+			/// add the parameter declaration into "param list scope"
+			/// @todo it is suggested that there should be an individual ASTNode type for parameter since it "accepts"
+			/// @todo an `ASTConsumer` in an different way
 			sema.actOnDeclInScope(paramDecl)
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
 			}
 		}
 		expectAndConsume(TokenType.RightParen)
+		/// @todo
+		/// If the following item is '{', then this declaration will be a definition. We do not quit the "param list scope"
+		/// at once so that we can access items in the param scope. This is quite disgusting.
 		if (currentToken().tokenType == TokenType.LeftBrace) {
 			parseFuncDef(funcDecl)
 		}
@@ -205,7 +212,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 	private fun expect(tokenType: TokenType) {
 		if (currentToken().tokenType != tokenType) {
-			error("Expected ${tokenType.str} got ${currentToken()}")
+			unrecoverableError("Expected ${tokenType.str} got ${currentToken()}")
 		}
 	}
 

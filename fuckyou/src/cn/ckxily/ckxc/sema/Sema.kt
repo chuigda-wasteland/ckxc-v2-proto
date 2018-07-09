@@ -1,12 +1,9 @@
 package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.type.BuiltinType
-import cn.ckxily.ckxc.ast.type.BuiltinTypeId
-import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
-import cn.ckxily.ckxc.err.error
-import kotlin.error as _aliased_error_
+import cn.ckxily.ckxc.err.unrecoverableError
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,
@@ -46,7 +43,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 
 	private fun checkDuplicate(scope: Scope, nameStr: String) {
 		if (scope.lookupLocally(nameStr).isNotEmpty()) {
-			error("redefinition of $nameStr")
+			unrecoverableError("redefinition of $nameStr")
 		}
 	}
 

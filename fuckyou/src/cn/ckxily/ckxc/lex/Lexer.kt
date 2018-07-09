@@ -1,9 +1,7 @@
 package cn.ckxily.ckxc.lex
 
 import cn.ckxily.ckxc.err.assertionFailed
-import cn.ckxily.ckxc.err.error
-
-import kotlin.error as _aliased_error_
+import cn.ckxily.ckxc.err.unrecoverableError
 
 internal class LexerStateMachine(private val srcCode: String) {
 	private var index: Int = 0
@@ -17,7 +15,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 				in number -> cachedTokens.add(lexNumber())
 				in symbols -> cachedTokens.add(lexSymbol())
 				in " \n\t" -> index++
-				else -> error("character ${srcCode[index]} is not allowed")
+				else -> unrecoverableError("character ${srcCode[index]} is not allowed")
 			}
 		}
 		cachedTokens.add(Token(TokenType.EOI))
