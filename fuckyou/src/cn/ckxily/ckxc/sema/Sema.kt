@@ -98,9 +98,9 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		return varDecl
 	}
 
-	fun actOnStartFuncDef() = pushScope()
+	fun actOnStartFuncDef() {}
 
-	fun actOnFinishFuncDef() = popScope()
+	fun actOnFinishFuncDef() {}
 
 	fun actOnDeclStmt(decl: Decl): DeclStmt = DeclStmt(decl)
 }
