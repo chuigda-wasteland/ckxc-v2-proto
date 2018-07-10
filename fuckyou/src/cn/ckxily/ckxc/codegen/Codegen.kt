@@ -2,6 +2,7 @@ package cn.ckxily.ckxc.codegen
 
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.stmt.CompoundStmt
+import cn.ckxily.ckxc.ast.stmt.DeclStmt
 
 interface ASTConsumer {
 	fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any?
@@ -11,6 +12,7 @@ interface ASTConsumer {
 	fun visitClassDecl(classDecl: ClassDecl): Any?
 	fun visitFuncDecl(funcDecl: FuncDecl): Any?
 	fun visitCompoundStmt(compoundStmt: CompoundStmt): Any?
+	fun visitDeclStmt(declStmt: DeclStmt): Any?
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
@@ -84,6 +86,15 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 		for (stmt in compoundStmt.stmtList) stmt.accept(this)
 		indentation--
 		indent(); println("Compound statement end!")
+		return null
+	}
+
+	override fun visitDeclStmt(declStmt: DeclStmt): Any? {
+		indent(); println("Declaration statement begin!")
+		indentation++
+		declStmt.decl.accept(this)
+		indentation--
+		indent(); println("Declaration statement end!")
 		return null
 	}
 }
