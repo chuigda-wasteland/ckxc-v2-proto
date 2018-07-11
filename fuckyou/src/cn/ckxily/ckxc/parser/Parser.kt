@@ -215,13 +215,8 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 	private fun parseFuncDef(funcDecl: FuncDecl) {
 		assert(currentToken().tokenType == TokenType.LeftBrace)
-		nextToken()
-		val compoundStmt = CompoundStmt()
 		sema.actOnStartFuncDef()
-		while (currentToken().tokenType != TokenType.RightBrace) {
-			compoundStmt.addStmt(parseStmt())
-		}
-		expectAndConsume(TokenType.RightBrace)
+		val compoundStmt = parseCompoundStmt()
 		sema.actOnFinishFuncDef()
 		funcDecl.funcBody = compoundStmt
 	}
@@ -233,9 +228,15 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			else -> error("Fuck you!")
 		}
 
-	private fun parseCompoundStmt(): Stmt {
+	private fun parseCompoundStmt(): CompoundStmt {
 		assert(currentToken().tokenType == TokenType.LeftBrace)
-		TODO("not implemented")
+		nextToken()
+		val compoundStmt = CompoundStmt()
+		while (currentToken().tokenType != TokenType.RightBrace) {
+			compoundStmt.addStmt(parseStmt())
+		}
+		expectAndConsume(TokenType.RightBrace)
+		return compoundStmt
 	}
 
 	private fun parseDeclStmt(): Stmt {
