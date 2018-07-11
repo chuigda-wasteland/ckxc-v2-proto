@@ -1,7 +1,8 @@
 package cn.ckxily.ckxc.parser
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.stmt.*
+import cn.ckxily.ckxc.ast.stmt.CompoundStmt
+import cn.ckxily.ckxc.ast.stmt.Stmt
 import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.err.unrecoverableError
 import cn.ckxily.ckxc.lex.Token
@@ -29,7 +30,6 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 				TokenType.LeftParen -> unrecoverableError("Structual binding not allowed at top level of program")
 				else -> unrecoverableError("Token ${currentToken()} not allowed at top level of program")
 			}
-			sema.actOnDeclInScope(thisDecl, sema.currentScope)
 			sema.actOnDeclInContext(thisDecl, sema.currentDeclContext)
 		}
 		return sema.topLevelDeclContext as TransUnitDecl
@@ -55,7 +55,18 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	}
 
 	private fun parseCustomType(): Type {
-		unrecoverableError("parseCustomType not implemented")
+		assert(currentToken().tokenType == TokenType.Id)
+		val name = currentToken().value as String
+		nextToken()
+		/// @todo type lookup should be solved by Sema
+		val lookupResult = sema.currentScope.lookup(name)
+		if (lookupResult.size != 1) {
+			unrecoverableError("More than one or no type declarations found")
+		}
+
+		if (lookupResult[0] is ClassDecl) return (lookupResult[0] as ClassDecl).type
+		if (lookupResult[0] is EnumDecl) return (lookupResult[0] as EnumDecl).type
+		unrecoverableError("No such type")
 	}
 
 	private fun parseBuiltinType(): Type? {
@@ -81,6 +92,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 		val enumDecl = sema.actOnEnum(sema.currentScope, name)
 		parseEnumerators(enumDecl)
+		sema.actOnDeclInScope(enumDecl, sema.currentScope)
 		return enumDecl
 	}
 
@@ -113,6 +125,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		nextToken()
 
 		val classDecl = sema.actOnClass(sema.currentScope, name)
+		sema.actOnDeclInScope(classDecl, sema.currentScope)
 		parseClassFields(classDecl)
 		return classDecl
 	}
@@ -155,7 +168,9 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expect(TokenType.Id)
 		val name = currentToken().value as String
 		nextToken()
-		return sema.actOnVarDecl(sema.currentScope, name, type)
+		val varDecl = sema.actOnVarDecl(sema.currentScope, name, type)
+		sema.actOnDeclInScope(varDecl)
+		return varDecl
 	}
 
 	private fun parseFuncDecl(): FuncDecl {
@@ -167,7 +182,8 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expect(TokenType.Id)
 		val name = currentToken().value as String
 		nextToken()
-		val funcDecl =  sema.actOnFuncDecl(sema.currentScope, name)
+		val funcDecl = sema.actOnFuncDecl(sema.currentScope, name)
+		sema.actOnDeclInScope(funcDecl)
 		expectAndConsume(TokenType.LeftParen)
 		/// @todo
 		/// Now we enter a "param list scope" which is used for parameters.

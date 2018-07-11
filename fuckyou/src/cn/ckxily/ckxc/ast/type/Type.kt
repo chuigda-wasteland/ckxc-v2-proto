@@ -55,9 +55,9 @@ class ReferenceType(var referenced: Type, specifiers: TypeSpecifiers) : Type(Typ
 }
 
 class ClassType(var decl: ClassDecl, specifiers: TypeSpecifiers) : Type(TypeId.Class, specifiers) {
-	override fun toString() = "${decl.nameStr} $specifiers"
+	override fun toString() = "${decl.nameStr}(${decl.hashCode()}) $specifiers"
 }
 
 class EnumType(var decl: EnumDecl, specifiers: TypeSpecifiers) : Type(TypeId.Enum, specifiers) {
-	override fun toString() = "${decl.nameStr} $specifiers"
+	override fun toString() = "${decl.nameStr}(${decl.hashCode()}) $specifiers"
 }

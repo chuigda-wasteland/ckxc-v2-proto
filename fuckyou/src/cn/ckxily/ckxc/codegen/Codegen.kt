@@ -32,7 +32,7 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 	override fun visitVarDecl(varDecl: VarDecl): Any? {
 		indent(); println("Variable declaration begin!")
 		indentation++
-		indent(); println("${varDecl.nameStr} of type ${varDecl.type}")
+		indent(); println("${varDecl.nameStr}(${varDecl.hashCode()}) of type ${varDecl.type}")
 		indentation--
 		indent(); println("Variable declaration end!")
 		return null
@@ -40,7 +40,7 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitEnumDecl(enumDecl: EnumDecl): Any? {
 		indent(); println("Enum declaration begin!")
-		indent(); println("enum ${enumDecl.nameStr}")
+		indent(); println("enum ${enumDecl.nameStr}(${enumDecl.hashCode()})")
 		indentation++
 		for (subDecl in enumDecl.decls) subDecl.accept(this)
 		indentation--
@@ -49,13 +49,13 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 	}
 
 	override fun visitEnumeratorDecl(enumeratorDecl: EnumeratorDecl): Any? {
-		indent(); println("${enumeratorDecl.nameStr} = ${enumeratorDecl.init}")
+		indent(); println("${enumeratorDecl.nameStr}(${enumeratorDecl.hashCode()}) = ${enumeratorDecl.init}")
 		return null
 	}
 
 	override fun visitClassDecl(classDecl: ClassDecl): Any? {
 		indent(); println("Class declaration begin!")
-		indent(); println("class ${classDecl.nameStr}")
+		indent(); println("class ${classDecl.nameStr}(${classDecl.hashCode()})")
 		indentation++
 		for (subDecl in classDecl.decls) subDecl.accept(this)
 		indentation--
@@ -65,7 +65,7 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitFuncDecl(funcDecl: FuncDecl): Any? {
 		indent(); println("Function declaration begin!")
-		indent(); println("function ${funcDecl.nameStr}")
+		indent(); println("function ${funcDecl.nameStr}(${funcDecl.hashCode()})")
 		indentation++
 		for (paramDecl in funcDecl.paramList) paramDecl.accept(this)
 		indentation--

@@ -1,8 +1,10 @@
 package cn.ckxily.ckxc.ast.decl
 
-import cn.ckxily.ckxc.ast.type.Type
-import cn.ckxily.ckxc.ast.stmt.Stmt
 import cn.ckxily.ckxc.ast.stmt.CompoundStmt
+import cn.ckxily.ckxc.ast.type.ClassType
+import cn.ckxily.ckxc.ast.type.EnumType
+import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.type.getNoSpecifier
 import cn.ckxily.ckxc.codegen.ASTConsumer
 
 enum class DeclKind(val str: String) {
@@ -54,11 +56,13 @@ class EnumeratorDecl(override var nameStr: String, var init: Int)
 
 class ClassDecl(override val nameStr: String)
 	: DeclContext(DeclContextKind.ClassContext, DeclKind.ClassDecl) {
+	val type: ClassType = ClassType(this, getNoSpecifier())
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitClassDecl(this)
 }
 
 class EnumDecl(override val nameStr: String)
 	: DeclContext(DeclContextKind.EnumContext, DeclKind.EnumDecl) {
+	val type: EnumType = EnumType(this, getNoSpecifier())
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumDecl(this)
 }
 

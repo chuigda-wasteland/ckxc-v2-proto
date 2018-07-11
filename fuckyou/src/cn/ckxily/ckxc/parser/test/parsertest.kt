@@ -22,9 +22,12 @@ fun Array<String>.main() {
 			vr32 f;
 		}
 
+		ClassC wtf;
+
 		func FuncFuck(vi8 a, vi16 const* const* const b);
 		func FuckFunc(vi8 a, vi16* const p) {
 			vi8 b;
+			ClassC wtf;
 		}
 	""".trimIndent())).accept(ASTPrinter())
 }
