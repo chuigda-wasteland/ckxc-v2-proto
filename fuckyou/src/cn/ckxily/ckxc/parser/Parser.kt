@@ -8,8 +8,9 @@ import cn.ckxily.ckxc.util.unrecoverableError
 import cn.ckxily.ckxc.lex.Token
 import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Sema
+import cn.ckxily.ckxc.util.*
 
-class QualifiedName(val name: List<Token>)
+class QualifiedName(val name: List<String>)
 
 class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
 	fun parseTransUnit(): TransUnitDecl {
@@ -29,7 +30,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 					}
 					decl
 				}
-				TokenType.LeftParen -> unrecoverableError("Structual binding not allowed at top level of program")
+				TokenType.LeftParen -> unrecoverableError("Structural binding not allowed at top level of program")
 				else -> unrecoverableError("Token ${currentToken()} not allowed at top level of program")
 			}
 			sema.actOnDeclInContext(thisDecl, sema.currentDeclContext)
@@ -37,8 +38,24 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		return sema.topLevelDeclContext as TransUnitDecl
 	}
 
-	private fun parseMaybeQualifiedId(): Any?{
-		return null
+	private fun parseMaybeQualifiedId(): Either<String, QualifiedName> {
+		assert(currentToken().tokenType == TokenType.Id)
+		val firstName = currentToken().value as String
+		nextToken()
+		if (currentToken().tokenType != TokenType.ColonColon) {
+			return Left(firstName)
+		}
+		else {
+			val nameChain = ArrayList<String>()
+			nameChain.add(firstName)
+			while (currentToken().tokenType == TokenType.ColonColon) {
+				nextToken()
+				expect(TokenType.Id)
+				nameChain.add(currentToken().value as String)
+				nextToken()
+			}
+			return Right(QualifiedName(nameChain))
+		}
 	}
 
 	private fun parseType(): Type {

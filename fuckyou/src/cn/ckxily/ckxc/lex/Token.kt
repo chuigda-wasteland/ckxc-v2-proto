@@ -19,6 +19,7 @@ enum class TokenType(val str: String) {
 	Number("Number\$"),
 	Id("Identifier\$"),
 	Colon(":"),
+	ColonColon("::"),
 	Semicolon(";"),
 	Comma(","),
 	Period("."),

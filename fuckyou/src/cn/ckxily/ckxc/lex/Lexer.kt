@@ -33,7 +33,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 
 	private fun lexSymbol(): Token {
 		val symbolStr: String = when (srcCode[index]) {
-			in ".,:;+*/<>{}[]()&" -> {
+			in ".,;+*/<>{}[]()&" -> {
 				++index
 				srcCode[index-1].toString()
 			}
@@ -60,6 +60,14 @@ internal class LexerStateMachine(private val srcCode: String) {
 			else {
 				index++
 				"!"
+			}
+			':' -> if (index + 1 < srcCode.length && srcCode[index + 1] == ':') {
+				index +=2
+				"::"
+			}
+			else {
+				index++
+				":"
 			}
 			else -> assertionFailed("No other characters allowed when lexing symbol")
 		}
