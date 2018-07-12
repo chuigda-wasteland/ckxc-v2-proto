@@ -4,7 +4,9 @@ import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.stmt.DeclStmt
 import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
-import cn.ckxily.ckxc.util.unrecoverableError
+import cn.ckxily.ckxc.parser.QualifiedName
+import cn.ckxily.ckxc.util.*
+import java.util.*
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,
@@ -23,7 +25,31 @@ class Scope(val parent: Scope? = null,
 
 	fun lookupLocally(name: String) = decls.filter { decl -> decl.nameStr?.equals(name) ?: false }
 
-	fun lookup(name: String) = dlLookup(this, name)
+	private fun lookup(name: String): List<Decl> = dlLookup(this, name)
+
+	private fun lookup(qualifiedName: QualifiedName): List<Decl> {
+		var basicDecl = dlLookup(this, qualifiedName.nameChains.first())
+		var i = 1
+		while (i < qualifiedName.nameChains.size) {
+			if (basicDecl.size != 1) {
+				unrecoverableError("懒癌发作不想写错误信息了!")
+			}
+
+			if (basicDecl.first() !is DeclContext) {
+				unrecoverableError("${basicDecl} is not a DeclContext")
+			}
+
+			basicDecl = (basicDecl.first() as DeclContext).lookupLocalDecl(qualifiedName.nameChains[i])
+			i += 1
+		}
+
+		return LinkedList(basicDecl)
+	}
+
+	fun lookup(maybeQualifiedName: Either<String, QualifiedName>): List<Decl> = when(maybeQualifiedName) {
+		is Left -> lookup(maybeQualifiedName.asLeft())
+		is Right -> lookup(maybeQualifiedName.asRight())
+	}
 }
 
 tailrec fun dlLookup(scope: Scope, name: String): List<Decl> {

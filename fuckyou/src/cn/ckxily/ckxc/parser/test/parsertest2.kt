@@ -16,5 +16,7 @@ fun Array<String>.main() {
 				ClassA &rA;
 			}
 		}
+
+		ClassA::ClassB someFuck;
 	""".trimIndent())).accept(ASTPrinter())
 }

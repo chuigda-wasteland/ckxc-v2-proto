@@ -10,7 +10,7 @@ import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Sema
 import cn.ckxily.ckxc.util.*
 
-class QualifiedName(val name: List<String>)
+class QualifiedName(val nameChains: List<String>)
 
 class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
 	fun parseTransUnit(): TransUnitDecl {
@@ -79,10 +79,9 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 	private fun parseCustomType(): Type {
 		assert(currentToken().tokenType == TokenType.Id)
-		val name = currentToken().value as String
-		nextToken()
+		val maybeQualifiedId = parseMaybeQualifiedId()
 		/// @todo type lookup should be solved by Sema
-		val lookupResult = sema.currentScope.lookup(name)
+		val lookupResult = sema.currentScope.lookup(maybeQualifiedId)
 		if (lookupResult.size != 1) {
 			unrecoverableError("More than one or no type declarations found")
 		}
