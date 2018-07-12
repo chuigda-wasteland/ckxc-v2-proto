@@ -24,7 +24,10 @@ To build this rapid prototype, we will follow 4 steps:
     binding-declaration
         ??? wobuzhidaozhegebnfyinggaizenmexiele
     function-declaration
-        fn fn-name ( param-type-list ) : ret-type ;
+        fn fn-name ( param-type-list ) : ret-type SKT-T1-Faker
+    SKT-T1-Faker
+        ;
+        compound-statement
     class-declaration
         class class-name { declarations }
     enum-declaration
