@@ -23,20 +23,20 @@ class CompoundStmt(val stmtList: MutableList<Stmt> = ArrayList()) : Stmt(StmtKin
 
 class IfStmt(val expr: Any, val thenStmt: Stmt, val elseStmt: Stmt? = null) : Stmt(StmtKind.IfStmt) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		TODO("not implemented")
 	}
 }
 
 class ForStmt(val init: Any? = null, val cond: Any? = null, val incr: Any? = null, val body: Stmt)
 	: Stmt(StmtKind.ForStmt) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		TODO("not implemented")
 	}
 }
 
 class WhileStmt(val expr: Any, val body: Stmt) : Stmt(StmtKind.WhileStmt) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		TODO("not implemented")
 	}
 }
 
@@ -47,6 +47,6 @@ class DeclStmt(val decl: Decl) : Stmt(StmtKind.DeclStmt) {
 
 class ExprStmt(val expr: Any?) : Stmt(StmtKind.ExprStmt) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		TODO("not implemented")
 	}
 }
