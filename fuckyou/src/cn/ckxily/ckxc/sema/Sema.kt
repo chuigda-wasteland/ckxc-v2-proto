@@ -4,7 +4,7 @@ import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.stmt.DeclStmt
 import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
-import cn.ckxily.ckxc.err.unrecoverableError
+import cn.ckxily.ckxc.util.unrecoverableError
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,

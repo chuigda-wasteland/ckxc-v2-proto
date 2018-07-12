@@ -4,10 +4,12 @@ import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.stmt.CompoundStmt
 import cn.ckxily.ckxc.ast.stmt.Stmt
 import cn.ckxily.ckxc.ast.type.*
-import cn.ckxily.ckxc.err.unrecoverableError
+import cn.ckxily.ckxc.util.unrecoverableError
 import cn.ckxily.ckxc.lex.Token
 import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Sema
+
+class QualifiedName(val name: List<Token>)
 
 class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
 	fun parseTransUnit(): TransUnitDecl {
@@ -33,6 +35,10 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			sema.actOnDeclInContext(thisDecl, sema.currentDeclContext)
 		}
 		return sema.topLevelDeclContext as TransUnitDecl
+	}
+
+	private fun parseMaybeQualifiedId(): Any?{
+		return null
 	}
 
 	private fun parseType(): Type {

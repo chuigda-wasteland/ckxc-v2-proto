@@ -1,4 +1,4 @@
-package cn.ckxily.ckxc.err
+package cn.ckxily.ckxc.util
 
 import java.lang.System.exit
 

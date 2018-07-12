@@ -1,7 +1,7 @@
 package cn.ckxily.ckxc.lex
 
-import cn.ckxily.ckxc.err.assertionFailed
-import cn.ckxily.ckxc.err.unrecoverableError
+import cn.ckxily.ckxc.util.assertionFailed
+import cn.ckxily.ckxc.util.unrecoverableError
 
 internal class LexerStateMachine(private val srcCode: String) {
 	private var index: Int = 0
