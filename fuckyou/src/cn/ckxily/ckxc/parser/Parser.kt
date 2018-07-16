@@ -80,7 +80,6 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	private fun parseCustomType(): Type {
 		assert(currentToken().tokenType == TokenType.Id)
 		val maybeQualifiedId = parseMaybeQualifiedId()
-		/// @todo type lookup should be solved by Sema
 		val lookupResult = sema.currentScope.lookup(maybeQualifiedId)
 		if (lookupResult.size != 1) {
 			unrecoverableError("More than one or no type declarations found")

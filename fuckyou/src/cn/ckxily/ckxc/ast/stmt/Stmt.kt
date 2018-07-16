@@ -1,6 +1,7 @@
 package cn.ckxily.ckxc.ast.stmt
 
 import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.expr.Expr
 import cn.ckxily.ckxc.codegen.ASTConsumer
 
 enum class StmtKind(val str: String) {
@@ -40,12 +41,11 @@ class WhileStmt(val expr: Any, val body: Stmt) : Stmt(StmtKind.WhileStmt) {
 	}
 }
 
-/// TODO one statment may correspond to multiple declarations.
 class DeclStmt(val decl: Decl) : Stmt(StmtKind.DeclStmt) {
 	override fun accept(astConsumer: ASTConsumer) = astConsumer.visitDeclStmt(this)
 }
 
-class ExprStmt(val expr: Any?) : Stmt(StmtKind.ExprStmt) {
+class ExprStmt(val expr: Expr) : Stmt(StmtKind.ExprStmt) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
 		TODO("not implemented")
 	}
