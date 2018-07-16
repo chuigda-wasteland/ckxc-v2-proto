@@ -1,7 +1,10 @@
 package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.expr.DeclRefExpr
+import cn.ckxily.ckxc.ast.expr.Expr
 import cn.ckxily.ckxc.ast.stmt.DeclStmt
+import cn.ckxily.ckxc.ast.stmt.ExprStmt
 import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
 import cn.ckxily.ckxc.parser.QualifiedName
@@ -129,4 +132,8 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnFinishFuncDef() {}
 
 	fun actOnDeclStmt(decl: Decl): DeclStmt = DeclStmt(decl)
+
+	fun actOnDeclRefExpr(decl: Decl): DeclRefExpr = DeclRefExpr(decl)
+
+	fun actOnExprStmt(expr: Expr): ExprStmt = ExprStmt(expr)
 }

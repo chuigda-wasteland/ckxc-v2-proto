@@ -1,8 +1,8 @@
 package cn.ckxily.ckxc.codegen
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.stmt.CompoundStmt
-import cn.ckxily.ckxc.ast.stmt.DeclStmt
+import cn.ckxily.ckxc.ast.expr.*
+import cn.ckxily.ckxc.ast.stmt.*
 
 interface ASTConsumer {
 	fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any?
@@ -13,6 +13,8 @@ interface ASTConsumer {
 	fun visitFuncDecl(funcDecl: FuncDecl): Any?
 	fun visitCompoundStmt(compoundStmt: CompoundStmt): Any?
 	fun visitDeclStmt(declStmt: DeclStmt): Any?
+	fun visitExprStmt(exprStmt: ExprStmt): Any?
+	fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any?
 }
 
 class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
@@ -95,6 +97,25 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 		declStmt.decl.accept(this)
 		indentation--
 		indent(); println("Declaration statement end!")
+		return null
+	}
+
+	override fun visitExprStmt(exprStmt: ExprStmt): Any? {
+		indent(); println("Expression statement begin!")
+		indentation++
+		exprStmt.expr.accept(this)
+		indentation--
+		indent(); println("Expression statement end!")
+		return null
+	}
+
+	override fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any? {
+		indent(); println("Expression statement begin!")
+		indentation++
+		/// TODO this forms bad output format.
+		declRefExpr.decl.accept(this)
+		indentation--
+		indent(); println("Expression statement end!")
 		return null
 	}
 }

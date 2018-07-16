@@ -1,7 +1,7 @@
 package cn.ckxily.ckxc.ast.stmt
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.expr.Expr
+import cn.ckxily.ckxc.ast.expr.*
 import cn.ckxily.ckxc.codegen.ASTConsumer
 
 enum class StmtKind(val str: String) {
@@ -46,7 +46,5 @@ class DeclStmt(val decl: Decl) : Stmt(StmtKind.DeclStmt) {
 }
 
 class ExprStmt(val expr: Expr) : Stmt(StmtKind.ExprStmt) {
-	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented")
-	}
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitExprStmt(this)
 }

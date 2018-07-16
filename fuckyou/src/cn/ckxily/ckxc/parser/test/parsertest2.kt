@@ -18,5 +18,10 @@ fun Array<String>.main() {
 		}
 
 		ClassA::ClassB someFuck;
+
+		func test() {
+			ClassA::ClassB someFuck;
+		}
+
 	""".trimIndent())).accept(ASTPrinter())
 }

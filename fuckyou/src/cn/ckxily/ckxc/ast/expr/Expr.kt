@@ -46,9 +46,7 @@ abstract class Expr(val exprId: ExprId) {
 }
 
 class DeclRefExpr(val decl: Decl) : Expr(ExprId.DeclRefExpr) {
-	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitDeclRefExpr(this)
 }
 
 class MemberAccessExpr(val decl: Decl, val base: Expr, val byPointer: Boolean)

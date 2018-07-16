@@ -1,7 +1,11 @@
 package cn.ckxily.ckxc.parser
 
 import cn.ckxily.ckxc.ast.decl.*
+import cn.ckxily.ckxc.ast.expr.DeclRefExpr
+import cn.ckxily.ckxc.ast.expr.Expr
 import cn.ckxily.ckxc.ast.stmt.CompoundStmt
+import cn.ckxily.ckxc.ast.stmt.DeclStmt
+import cn.ckxily.ckxc.ast.stmt.ExprStmt
 import cn.ckxily.ckxc.ast.stmt.Stmt
 import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.util.unrecoverableError
@@ -244,7 +248,8 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 	private fun parseStmt(): Stmt =
 		when (currentToken().tokenType) {
-			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> parseDeclStmt()
+			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32 -> parseDeclStmt()
+			TokenType.Id -> parseDeclStmt()
 			TokenType.LeftBrace -> parseCompoundStmt()
 			else -> error("Fuck you!")
 		}
@@ -260,11 +265,36 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		return compoundStmt
 	}
 
-	private fun parseDeclStmt(): Stmt {
+	private fun parseDeclStmt(): DeclStmt {
 		val varDecl = parseVarDecl()
 		expectAndConsume(TokenType.Semicolon)
 		sema.actOnDeclInScope(varDecl, sema.currentScope)
 		return sema.actOnDeclStmt(varDecl)
+	}
+
+	private fun parseExprStmt(maybeQualifiedId: Either<String, QualifiedName>): ExprStmt {
+		val expr = parseExpr()
+		expectAndConsume(TokenType.Semicolon)
+		return sema.actOnExprStmt(expr)
+	}
+
+	private fun parseExpr(): Expr {
+		return when (currentToken().tokenType) {
+			TokenType.Id -> parseDeclRefExpr()
+			else -> assertionFailed("Unreachable code!")
+		}
+	}
+
+	private fun parseDeclRefExpr(): DeclRefExpr {
+		val id = parseMaybeQualifiedId()
+		val decl = sema.currentScope.lookup(id)
+
+		// TODO This is troublesome when we get to function overloading.
+		if (decl.size != 1) {
+			unrecoverableError("Ambiguous!")
+		}
+
+		return sema.actOnDeclRefExpr(decl.first())
 	}
 
 	private fun expect(tokenType: TokenType) {
