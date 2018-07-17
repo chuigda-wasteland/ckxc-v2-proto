@@ -13,7 +13,7 @@ import java.util.*
 
 class Scope(val parent: Scope? = null,
 						var depth: Int,
-						var decls: MutableList<Decl> = ArrayList()) {
+						private var decls: MutableList<Decl> = ArrayList()) {
 	init {
 		depth = if (parent == null) 0 else parent.depth + 1
 	}
@@ -39,7 +39,7 @@ class Scope(val parent: Scope? = null,
 			}
 
 			if (basicDecl.first() !is DeclContext) {
-				unrecoverableError("${basicDecl} is not a DeclContext")
+				unrecoverableError("$basicDecl is not a DeclContext")
 			}
 
 			basicDecl = (basicDecl.first() as DeclContext).lookupLocalDecl(qualifiedName.nameChains[i])
@@ -116,8 +116,10 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		return FuncDecl(name, ArrayList(), BuiltinType(BuiltinTypeId.Int8, getNoSpecifier()), null)
 	}
 
+	@Suppress("UNUSED_PARAMETER")
 	fun actOnStartParamList(scope: Scope, funcDecl: FuncDecl) = pushScope()
 
+	@Suppress("UNUSED_PARAMETER")
 	fun actOnFinishParamList(scope: Scope, funcDecl: FuncDecl) = popScope()
 
 	fun actOnParam(scope: Scope, funcDecl: FuncDecl, name: String, type: Type): VarDecl {
@@ -130,6 +132,10 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnStartFuncDef() {}
 
 	fun actOnFinishFuncDef() {}
+
+	fun actOnCompoundStmtBegin() = pushScope()
+
+	fun actOnCompoundStmtEnd() = popScope()
 
 	fun actOnDeclStmt(decl: Decl): DeclStmt = DeclStmt(decl)
 

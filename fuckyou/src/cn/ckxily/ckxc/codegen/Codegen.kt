@@ -17,8 +17,8 @@ interface ASTConsumer {
 	fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any?
 }
 
-class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
-	fun indent() {
+class ASTPrinter(private var indentation: Int = 0) : ASTConsumer {
+	private fun indent() {
 		var i = 0; while (i < indentation * 3) { print(" "); ++i }
 	}
 
@@ -110,12 +110,12 @@ class ASTPrinter(var indentation: Int = 0) : ASTConsumer {
 	}
 
 	override fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any? {
-		indent(); println("Expression statement begin!")
+		indent(); println("DeclRefExpr begin!")
 		indentation++
 		/// TODO this forms bad output format.
 		declRefExpr.decl.accept(this)
 		indentation--
-		indent(); println("Expression statement end!")
+		indent(); println("DeclRefExpr end!")
 		return null
 	}
 }

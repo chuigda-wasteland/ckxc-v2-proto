@@ -20,7 +20,12 @@ fun Array<String>.main() {
 		let ClassA::ClassB someFuck;
 
 		func test() {
-			let ClassA::ClassB someFuck;
+			someFuck;
+			{
+				let ClassA::ClassB *someFuck;
+				someFuck;
+			}
+			someFuck;
 		}
 
 	""".trimIndent())).accept(ASTPrinter())

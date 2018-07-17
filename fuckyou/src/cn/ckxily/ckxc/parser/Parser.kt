@@ -16,7 +16,8 @@ import cn.ckxily.ckxc.util.*
 
 class QualifiedName(val nameChains: List<String>)
 
-class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var currentTokenIndex: Int = 0) {
+class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema = Sema(),
+												 private var currentTokenIndex: Int = 0) {
 	fun parseTransUnit(): TransUnitDecl {
 		while (currentToken().tokenType != TokenType.EOI) {
 			val thisDecl = when (currentToken().tokenType) {
@@ -46,8 +47,8 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		assert(currentToken().tokenType == TokenType.Id)
 		val firstName = currentToken().value as String
 		nextToken()
-		if (currentToken().tokenType != TokenType.ColonColon) {
-			return Left(firstName)
+		return if (currentToken().tokenType != TokenType.ColonColon) {
+			Left(firstName)
 		}
 		else {
 			val nameChain = ArrayList<String>()
@@ -58,7 +59,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 				nameChain.add(currentToken().value as String)
 				nextToken()
 			}
-			return Right(QualifiedName(nameChain))
+			Right(QualifiedName(nameChain))
 		}
 	}
 
@@ -133,6 +134,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			val value = currentToken().value!! as Int
 			nextToken()
 			val enumerator = sema.actOnEnumerator(sema.currentScope, enumDecl, name, value)
+			sema.actOnDeclInContext(enumerator, enumDecl)
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
 			}
@@ -255,7 +257,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 	private fun parseStmt(): Stmt =
 		when (currentToken().tokenType) {
 			TokenType.Let -> parseDeclStmt()
-			TokenType.Id -> parseDeclStmt()
+			TokenType.Id -> parseExprStmt()
 			TokenType.LeftBrace -> parseCompoundStmt()
 			else -> unrecoverableError("Fuck you!")
 		}
@@ -264,21 +266,22 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		assert(currentToken().tokenType == TokenType.LeftBrace)
 		nextToken()
 		val compoundStmt = CompoundStmt()
+		sema.actOnCompoundStmtBegin()
 		while (currentToken().tokenType != TokenType.RightBrace) {
 			compoundStmt.addStmt(parseStmt())
 		}
 		expectAndConsume(TokenType.RightBrace)
+		sema.actOnCompoundStmtEnd()
 		return compoundStmt
 	}
 
 	private fun parseDeclStmt(): DeclStmt {
 		val varDecl = parseVarDecl()
 		expectAndConsume(TokenType.Semicolon)
-		sema.actOnDeclInScope(varDecl, sema.currentScope)
 		return sema.actOnDeclStmt(varDecl)
 	}
 
-	private fun parseExprStmt(maybeQualifiedId: Either<String, QualifiedName>): ExprStmt {
+	private fun parseExprStmt(): ExprStmt {
 		val expr = parseExpr()
 		expectAndConsume(TokenType.Semicolon)
 		return sema.actOnExprStmt(expr)
