@@ -17,10 +17,10 @@ fun Array<String>.main() {
 			}
 		}
 
-		ClassA::ClassB someFuck;
+		let ClassA::ClassB someFuck;
 
 		func test() {
-			ClassA::ClassB someFuck;
+			let ClassA::ClassB someFuck;
 		}
 
 	""".trimIndent())).accept(ASTPrinter())

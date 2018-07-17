@@ -1,6 +1,7 @@
 package cn.ckxily.ckxc.lex
 
 enum class TokenType(val str: String) {
+	Let("let"),
 	Vi8("vi8"),
 	Vi16("vi16"),
 	Vi32("vi32"),

@@ -9,8 +9,8 @@ fun Array<String>.main() {
 	val parser = Parser()
 
 	parser.parse(lexer.lex("""
-		vi8 a;
-		vi8 const** b;
+		let vi8 a;
+		let vi8 const** b;
 		class ClassC {
 			enum EnumE {
 				Enumerator1 = 3,
@@ -22,12 +22,13 @@ fun Array<String>.main() {
 			vr32 f;
 		}
 
-		ClassC wtf;
+		let ClassC wtf;
 
 		func FuncFuck(vi8 a, vi16 const* const* const b);
 		func FuckFunc(vi8 a, vi16* const p) {
-			vi8 b;
-			ClassC wtf;
+			let vi8 b;
+			let ClassC wtf;
+			let ClassC::EnumE wtf2;
 		}
 	""".trimIndent())).accept(ASTPrinter())
 }

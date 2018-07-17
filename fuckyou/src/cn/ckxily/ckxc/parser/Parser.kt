@@ -22,7 +22,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 			val thisDecl = when (currentToken().tokenType) {
 				TokenType.Class -> parseClassDecl()
 				TokenType.Enum -> parseEnumDecl()
-				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
+				TokenType.Let -> {
 					val decl = parseVarDecl()
 					expectAndConsume(TokenType.Semicolon)
 					decl
@@ -159,7 +159,7 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expectAndConsume(TokenType.LeftBrace)
 		sema.actOnTagStartDefinition()
 		while (currentToken().tokenType != TokenType.RightBrace) {
-			val decl = parseDecl()
+			val decl = parseFieldDecl()
 			sema.actOnDeclInScope(decl)
 			sema.actOnDeclInContext(decl, classDecl)
 		}
@@ -167,28 +167,34 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 		expectAndConsume(TokenType.RightBrace)
 	}
 
+	private fun parseFieldDecl(): Decl {
+		return when (currentToken().tokenType) {
+			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
+				val varDecl = parseVarDecl(false)
+				expectAndConsume(TokenType.Semicolon)
+				varDecl
+			}
+			else -> parseDecl()
+		}
+	}
+
 	private fun parseDecl(): Decl =
 			when (currentToken().tokenType) {
-				TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32, TokenType.Id -> {
+				TokenType.Let -> {
 					val varDecl = parseVarDecl()
 					expectAndConsume(TokenType.Semicolon)
 					varDecl
 				}
-				TokenType.LeftParen -> {
-					val structuralBinding = parseStructuralBinding()
-					expectAndConsume(TokenType.Semicolon)
-					structuralBinding
-				}
 				TokenType.Class -> parseClassDecl()
 				TokenType.Enum -> parseEnumDecl()
-				else -> unrecoverableError("Unexpected token ${currentToken()}, expected vi8, vi16, vi32, vi64, vr32, class, enum or id")
+				else -> unrecoverableError("Unexpected token ${currentToken()}, expected let, class or enum")
 			}
 
-	private fun parseStructuralBinding(): Decl {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
-
-	private fun parseVarDecl(): VarDecl {
+	private fun parseVarDecl(requireLet: Boolean = true): VarDecl {
+		if (requireLet) {
+			assert(currentToken().tokenType == TokenType.Let)
+			nextToken()
+		}
 		val type = parseType()
 		expect(TokenType.Id)
 		val name = currentToken().value as String
@@ -248,10 +254,10 @@ class ParserStateMachine(val tokens: List<Token>, val sema: Sema = Sema(), var c
 
 	private fun parseStmt(): Stmt =
 		when (currentToken().tokenType) {
-			TokenType.Vi8, TokenType.Vi16, TokenType.Vi32, TokenType.Vi64, TokenType.Vr32 -> parseDeclStmt()
+			TokenType.Let -> parseDeclStmt()
 			TokenType.Id -> parseDeclStmt()
 			TokenType.LeftBrace -> parseCompoundStmt()
-			else -> error("Fuck you!")
+			else -> unrecoverableError("Fuck you!")
 		}
 
 	private fun parseCompoundStmt(): CompoundStmt {

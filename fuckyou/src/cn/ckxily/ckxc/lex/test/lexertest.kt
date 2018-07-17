@@ -8,7 +8,8 @@ fun Array<String>.main() {
 		class SomeClass {}
 
 		fn main(vi32 argc, vi8** argv): vi32 {
-			vi8 a, b;
+			let vi8 a;
+			let vi8 b;
 			if (argc != 3) {
 				return -1;
 			}
