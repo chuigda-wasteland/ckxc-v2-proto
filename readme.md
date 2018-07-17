@@ -20,15 +20,20 @@ To build this rapid prototype, we will follow 4 steps:
         enum-declaration
  
     variable-declaration
-        type declarators
+        let type declarators = initializer
+        
     binding-declaration
-        ??? wobuzhidaozhegebnfyinggaizenmexiele
+        let (type-name-pair-list) = expression
+        
     function-declaration
         fn fn-name ( param-type-list ) : ret-type SKT-T1-Faker
+        
     SKT-T1-Faker
         ;
         compound-statement
+        
     class-declaration
-        class class-name { declarations }
+        class class-name { field-declarations }
+        
     enum-declaration
         enum enum-name { enumerators }
