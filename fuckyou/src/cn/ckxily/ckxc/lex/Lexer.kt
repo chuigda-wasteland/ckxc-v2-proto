@@ -10,6 +10,21 @@ internal class LexerStateMachine(private val srcCode: String) {
 	private fun lexImpl() {
 		while (index < srcCode.length) {
 			when (srcCode[index]) {
+				'/' -> {
+					if (index + 1 < srcCode.length) {
+						if (srcCode[index + 1] == '/') {
+							index += 2
+							skipLineComment()
+						}
+						else if (srcCode[index + 1] == '*') {
+							index += 2
+							skipBlockComment()
+						}
+						else {
+							cachedTokens.add(lexSymbol())
+						}
+					}
+				}
 				in lowerCaseLetter -> cachedTokens.add(lexIdentifier())
 				in upperCaseLetter -> cachedTokens.add(lexIdentifier())
 				in number -> cachedTokens.add(lexNumber())
@@ -19,6 +34,23 @@ internal class LexerStateMachine(private val srcCode: String) {
 			}
 		}
 		cachedTokens.add(Token(TokenType.EOI))
+	}
+
+	private fun skipBlockComment() {
+		while (index < srcCode.length) {
+			if (srcCode[index] == '*') {
+				if (index + 1 < srcCode.length && srcCode[index + 1] == '/') {
+					index += 2
+					return
+				}
+			}
+			++index
+		}
+		unrecoverableError("Unterminated comment!")
+	}
+
+	private fun skipLineComment() {
+		while (index < srcCode.length && srcCode[index] != '\n') ++index
 	}
 
 	private fun lexIdentifier(): Token {
