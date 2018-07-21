@@ -13,7 +13,7 @@ fun Array<String>.main() {
 			let vi32 a;
 			let vi32 b;
 			let vi32 c;
-			c = a + b;
+			c = a + b * 42;
 		}
 	""".trimIndent())).accept(BetterASTPrinter())
 }

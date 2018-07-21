@@ -183,9 +183,7 @@ enum class CastOperation(val desc: String) {
 
 class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: Type)
 	: Expr(ExprId.ImplicitCastExpr) {
-	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitImplicitCastExpr(this)
 
 	override fun getTypeImpl(): Type = destType
 

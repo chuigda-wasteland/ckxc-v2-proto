@@ -19,6 +19,7 @@ interface ASTConsumer {
 	fun visitIntegralLiteralExpr(integralLiteralExpr: IntegralLiteralExpr): Any?
 	fun visitBinaryExpr(binaryExpr: BinaryExpr): Any?
 	fun visitImplicitDecay(expr: ImplicitDecayExpr): Any?
+	fun visitImplicitCastExpr(expr: ImplicitCastExpr): Any?
 }
 
 class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
@@ -124,6 +125,27 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 		indentation++
 		expr.expr.accept(this)
 		indentation--
+		return null
+	}
+
+	override fun visitImplicitCastExpr(expr: ImplicitCastExpr): Any? {
+		indent()
+		when (expr.castOp) {
+			CastOperation.AddConst -> println("ImplicitQualifyConst")
+			CastOperation.AddVolatile -> println("ImplicitQualifyVolatile")
+			CastOperation.IntegerWidenCast -> {
+				println("ImplicitIntegerWiden from ${expr.expr.type} to ${expr.destType}")
+				indentation++
+				expr.expr.accept(this)
+				indentation--
+			}
+			CastOperation.FloatingWidenCast -> {
+				println("ImplicitFloatingWiden from ${expr.expr.type} to ${expr.destType}")
+				indentation++
+				expr.expr.accept(this)
+				indentation--
+			}
+		}
 		return null
 	}
 }
