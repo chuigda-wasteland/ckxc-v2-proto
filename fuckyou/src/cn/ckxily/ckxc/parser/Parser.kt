@@ -50,8 +50,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 			Left(firstName)
 		}
 		else {
-			val nameChain = ArrayList<String>()
-			nameChain.add(firstName)
+			val nameChain = mutableListOf(firstName)
 			while (currentToken().tokenType == TokenType.ColonColon) {
 				nextToken()
 				expect(TokenType.Id)

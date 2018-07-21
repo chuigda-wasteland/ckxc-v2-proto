@@ -23,16 +23,16 @@ interface ASTConsumer {
 }
 
 class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
-	private fun indent() {
-		var i = 0;
-		while (i < indentation) { print("  "); ++i }
+	private fun indent() = print("  ".repeat(indentation))
+	private inline fun withIndent(func: () -> Unit) {
+		indentation++
+		func()
+		indentation--
 	}
 
 	override fun visitTransUnitDecl(transUnitDecl: TransUnitDecl): Any? {
 		println("TranslationUnitDecl")
-		indentation++
-		for (topLevelDecl in transUnitDecl.decls) topLevelDecl.accept(this)
-		indentation--
+		withIndent { for (topLevelDecl in transUnitDecl.decls) topLevelDecl.accept(this) }
 		return null
 	}
 
@@ -43,9 +43,7 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitEnumDecl(enumDecl: EnumDecl): Any? {
 		indent(); println("EnumDecl ${enumDecl.nameStr} ${addressOf(enumDecl)}")
-		indentation++
-		for (subDecl in enumDecl.decls) subDecl.accept(this)
-		indentation--
+		withIndent { for (subDecl in enumDecl.decls) subDecl.accept(this) }
 		return null
 	}
 
@@ -56,48 +54,36 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitClassDecl(classDecl: ClassDecl): Any? {
 		indent(); println("ClassDecl ${classDecl.nameStr} ${addressOf(classDecl)}")
-		indentation++
-		for (subDecl in classDecl.decls) subDecl.accept(this)
-		indentation--
+		withIndent { for (subDecl in classDecl.decls) subDecl.accept(this) }
 		return null
 	}
 
 	override fun visitFuncDecl(funcDecl: FuncDecl): Any? {
 		indent(); println("FuncDecl ${funcDecl.nameStr} ${addressOf(funcDecl)}")
-		indentation++
-		for (paramDecl in funcDecl.paramList) paramDecl.accept(this)
-		indentation--
+		withIndent { for (paramDecl in funcDecl.paramList) paramDecl.accept(this) }
 		indent(); println("ReturnType ${funcDecl.retType}")
 		if (funcDecl.funcBody != null) {
 			indent(); println("FunctionBody")
-			indentation++
-			funcDecl.funcBody!!.accept(this)
-			indentation--
+			withIndent { funcDecl.funcBody!!.accept(this) }
 		}
 		return null
 	}
 
 	override fun visitCompoundStmt(compoundStmt: CompoundStmt): Any? {
 		indent(); println("CompoundStmt")
-		indentation++
-		for (stmt in compoundStmt.stmtList) stmt.accept(this)
-		indentation--
+		withIndent { for (stmt in compoundStmt.stmtList) stmt.accept(this) }
 		return null
 	}
 
 	override fun visitDeclStmt(declStmt: DeclStmt): Any? {
 		indent(); println("DeclStmt")
-		indentation++
-		declStmt.decl.accept(this)
-		indentation--
+		withIndent { declStmt.decl.accept(this) }
 		return null
 	}
 
 	override fun visitExprStmt(exprStmt: ExprStmt): Any? {
 		indent(); println("ExprStmt")
-		indentation++
-		exprStmt.expr.accept(this)
-		indentation--
+		withIndent { exprStmt.expr.accept(this) }
 		return null
 	}
 
@@ -113,18 +99,16 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitBinaryExpr(binaryExpr: BinaryExpr): Any? {
 		indent(); println("BinaryExpr ${binaryExpr.opCode}")
-		indentation++
-		binaryExpr.lhs.accept(this)
-		binaryExpr.rhs.accept(this)
-		indentation--
+		withIndent {
+			binaryExpr.lhs.accept(this)
+			binaryExpr.rhs.accept(this)
+		}
 		return null
 	}
 
 	override fun visitImplicitDecay(expr: ImplicitDecayExpr): Any? {
 		indent(); println("LValueToRValueDecay")
-		indentation++
-		expr.expr.accept(this)
-		indentation--
+		withIndent { expr.expr.accept(this) }
 		return null
 	}
 
@@ -135,15 +119,11 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 			CastOperation.AddVolatile -> println("ImplicitQualifyVolatile")
 			CastOperation.IntegerWidenCast -> {
 				println("ImplicitIntegerWiden from ${expr.expr.type} to ${expr.destType}")
-				indentation++
-				expr.expr.accept(this)
-				indentation--
+				withIndent { expr.expr.accept(this) }
 			}
 			CastOperation.FloatingWidenCast -> {
 				println("ImplicitFloatingWiden from ${expr.expr.type} to ${expr.destType}")
-				indentation++
-				expr.expr.accept(this)
-				indentation--
+				withIndent { expr.expr.accept(this) }
 			}
 		}
 		return null
