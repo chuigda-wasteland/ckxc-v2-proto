@@ -158,8 +158,43 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		return BinaryExpr(opCode, actOnLValueToRValueDecay(lhs), actOnLValueToRValueDecay(rhs))
 	}
 
+	// TODO this function looks nasty, split it into several parts in further commits.
 	fun actOnImplicitCast(expr: Expr, desired: Type): Expr? {
-		TODO("not implemented")
+		assert(expr.type.typeId == TypeId.Builtin)
+		assert(desired.typeId == TypeId.Builtin)
+
+		var currentExpr = expr
+		var builtinSrcType = expr.type as BuiltinType
+		val builtinDesiredType = desired as BuiltinType
+
+		if (!builtinDesiredType.specifiers.isConst && builtinSrcType.specifiers.isConst
+				|| !builtinDesiredType.specifiers.isVolatile && builtinSrcType.specifiers.isVolatile) {
+			return null
+		}
+
+		if (builtinDesiredType.specifiers.isConst && !builtinSrcType.specifiers.isConst) {
+			builtinSrcType = qualType(builtinSrcType,
+						if (builtinSrcType.specifiers.isVolatile) getCVSpecifiers() else getCSpecifier()) as BuiltinType
+			currentExpr = ImplicitCastExpr(CastOperation.AddConst, currentExpr, builtinSrcType)
+		}
+
+		if (builtinDesiredType.specifiers.isVolatile && !builtinSrcType.specifiers.isVolatile) {
+			builtinSrcType = qualType(builtinSrcType,
+							if (builtinSrcType.specifiers.isConst) getCVSpecifiers() else getVSpecifier()) as BuiltinType
+			currentExpr = ImplicitCastExpr(CastOperation.AddVolatile, currentExpr, builtinSrcType)
+		}
+
+		if (builtinDesiredType.isInteger() && builtinSrcType.isInteger()
+				|| builtinDesiredType.isFloating() && builtinSrcType.isFloating()) {
+			if (builtinDesiredType.builtinTypeId.rank > builtinSrcType.builtinTypeId.rank) {
+				return ImplicitCastExpr(CastOperation.IntegerWidenCast, currentExpr, desired)
+			}
+			else if (builtinDesiredType.builtinTypeId.rank == builtinSrcType.builtinTypeId.rank) {
+				return currentExpr
+			}
+		}
+
+		return null
 	}
 
 	fun actOnLValueToRValueDecay(expr: Expr): Expr {

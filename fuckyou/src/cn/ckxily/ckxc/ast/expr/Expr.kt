@@ -166,8 +166,8 @@ class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(
 }
 
 enum class CastOperation(val desc: String) {
-	WidenCast("Widen cast"),
-	NarrowCast("Narrowing cast"),
+	IntegerWidenCast("Widen cast for integral types"),
+	FloatingWidenCast("Widen cast for floating types"),
 	AddConst("Implicitly adding const specifier"),
 	AddVolatile("Implicitly adding volatile specifier")
 }
