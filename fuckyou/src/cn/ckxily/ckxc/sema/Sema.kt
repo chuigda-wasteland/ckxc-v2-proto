@@ -1,8 +1,7 @@
 package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.expr.DeclRefExpr
-import cn.ckxily.ckxc.ast.expr.Expr
+import cn.ckxily.ckxc.ast.expr.*
 import cn.ckxily.ckxc.ast.stmt.DeclStmt
 import cn.ckxily.ckxc.ast.stmt.ExprStmt
 import cn.ckxily.ckxc.ast.type.*
@@ -142,4 +141,28 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnDeclRefExpr(decl: VarDecl): DeclRefExpr = DeclRefExpr(decl)
 
 	fun actOnExprStmt(expr: Expr): ExprStmt = ExprStmt(expr)
+
+	fun actOnBinaryExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
+		val commonType =
+			TypeUtility.commonType(lhs.type, rhs.type) ?: unrecoverableError("No common type!")
+
+		if (opCode == BinaryOpCode.LogicAnd	|| opCode == BinaryOpCode.LogicOr) {
+			if (commonType.typeId != TypeId.Builtin
+					&& (commonType as BuiltinType).builtinTypeId == BuiltinTypeId.Boolean) {
+				unrecoverableError("Non-bool type for logical operations!")
+			}
+		}
+
+		val castedLhs = actOnImplicitCast(lhs, commonType) ?: unrecoverableError("failed to cast lhs")
+		val castedRhs = actOnImplicitCast(rhs, commonType) ?: unrecoverableError("failed to cast rhs")
+		return BinaryExpr(opCode, actOnLValueToRValueDecay(lhs), actOnLValueToRValueDecay(rhs))
+	}
+
+	fun actOnImplicitCast(expr: Expr, desired: Type): Expr? {
+		TODO("not implemented")
+	}
+
+	fun actOnLValueToRValueDecay(expr: Expr): Expr {
+		return if (expr.valueCategory == ValueCategory.RValue) expr else ImplicitDecayExpr(expr)
+	}
 }

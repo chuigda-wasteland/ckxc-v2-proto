@@ -7,6 +7,8 @@ import cn.ckxily.ckxc.ast.type.BuiltinType
 import cn.ckxily.ckxc.ast.type.BuiltinTypeId
 import cn.ckxily.ckxc.ast.type.Type
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
+import cn.ckxily.ckxc.util.assertionFailed
+import cn.ckxily.ckxc.lex.TokenType
 
 enum class ExprId(val desc: String) {
 	DeclRefExpr("Declaration reference expression"),
@@ -15,7 +17,8 @@ enum class ExprId(val desc: String) {
 	FloatingLiteralExpr("Floating literal"),
 	UnaryExpr("Unary expression"),
 	BinaryExpr("Binary expression"),
-	ImplicitCastExpr("Implicit cast expression")
+	ImplicitCastExpr("Implicit cast expression"),
+	ImplicitDecayExpr("Implicit decay expression")
 }
 
 enum class ValueCategory(val desc: String) {
@@ -59,22 +62,29 @@ val ExprId.description get() = desc
 
 val UnaryOpCode.description get() = desc
 
+fun token2Unary(tokenType: TokenType): UnaryOpCode = when (tokenType) {
+	TokenType.Add -> UnaryOpCode.Positive
+	else -> assertionFailed("token not an unary operator!")
+}
+
 abstract class Expr(val exprId: ExprId) {
 	abstract fun accept(astConsumer: ASTConsumer): Any?
 
-	fun getValueCategory(): ValueCategory {
-		if (cachedValueCategory == null) {
-			cachedValueCategory = getValueCategoryImpl()
+	val valueCategory: ValueCategory
+		get() {
+			if (cachedValueCategory == null) {
+				cachedValueCategory = getValueCategoryImpl()
+			}
+			return cachedValueCategory!!
 		}
-		return cachedValueCategory!!
-	}
 
-	fun getType(): Type {
-		if (cachedType == null) {
-			cachedType = getTypeImpl()
+	val type: Type
+		get() {
+			if (cachedType == null) {
+				cachedType = getTypeImpl()
+			}
+			return cachedType!!
 		}
-		return cachedType!!
-	}
 
 	private var cachedType: Type? = null
 
@@ -139,7 +149,7 @@ class UnaryExpr(val opCode: UnaryOpCode, val expr: Expr) : Expr(ExprId.UnaryExpr
 		else -> ValueCategory.RValue
 	}
 
-	override fun getTypeImpl(): Type = expr.getType()
+	override fun getTypeImpl(): Type = expr.type
 }
 
 class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(ExprId.BinaryExpr) {
@@ -152,15 +162,33 @@ class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(
 		else -> ValueCategory.RValue
 	}
 
-	override fun getTypeImpl(): Type = lhs.getType()
+	override fun getTypeImpl(): Type = lhs.type
 }
 
 enum class CastOperation(val desc: String) {
-	UpgradeCast(""),
-	DowngradeCast(""),
-	LValueToRValueDecay(""),
-	AddConst(""),
-	RemoveConst("")
+	WidenCast("Widen cast"),
+	NarrowCast("Narrowing cast"),
+	AddConst("Implicitly adding const specifier"),
+	AddVolatile("Implicitly adding volatile specifier")
 }
 
 class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: Type)
+	: Expr(ExprId.ImplicitCastExpr) {
+	override fun accept(astConsumer: ASTConsumer): Any? {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
+
+	override fun getTypeImpl(): Type = destType
+
+	override fun getValueCategoryImpl(): ValueCategory = expr.valueCategory
+}
+
+class ImplicitDecayExpr(val expr: Expr) : Expr(ExprId.ImplicitDecayExpr) {
+	override fun accept(astConsumer: ASTConsumer): Any? {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
+
+	override fun getTypeImpl(): Type = expr.type
+
+	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.RValue
+}

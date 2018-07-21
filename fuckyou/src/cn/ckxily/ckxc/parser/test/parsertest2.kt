@@ -15,7 +15,7 @@ fun Array<String>.main() {
 		class ClassA {
 			ClassA *pA;
 			class ClassB {
-				ClassB *pB;
+				ClassB /* Data */ *pB;
 				ClassA &rA;
 			}
 		}
@@ -30,8 +30,8 @@ fun Array<String>.main() {
 				42;
 				42;
 			}
-			// someFuck;
+			someFuck;
+			// someFuck
 		}
-
 	""".trimIndent())).accept(BetterASTPrinter())
 }

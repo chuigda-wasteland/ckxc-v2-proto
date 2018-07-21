@@ -104,7 +104,7 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 	}
 
 	override fun visitIntegralLiteralExpr(integralLiteralExpr: IntegralLiteralExpr): Any? {
-		indent(); println("IntegralLiteralExpr ${integralLiteralExpr.value} of type ${integralLiteralExpr.getType()}")
+		indent(); println("IntegralLiteralExpr ${integralLiteralExpr.value} of type ${integralLiteralExpr.type}")
 		return null
 	}
 }

@@ -14,12 +14,14 @@ enum class TypeId {
 	val str get() = name
 }
 
-enum class BuiltinTypeId(val str: String) {
-	Int8("8bit Integer"),
-	Int16("16bit Integer"),
-	Int32("32bit Integer"),
-	Int64("64bit Integer"),
-	Float("Float")
+enum class BuiltinTypeId(val str: String, val rank: Int) {
+	Int8("8bit Integer", 10),
+	Int16("16bit Integer", 20),
+	Int32("32bit Integer", 30),
+	Int64("64bit Integer", 40),
+	Float("Float", 110),
+	Double("Double", 120),
+	Boolean("Boolean", -1)
 }
 
 data class TypeSpecifiers(var isConst: Boolean, var isVolatile: Boolean) {
