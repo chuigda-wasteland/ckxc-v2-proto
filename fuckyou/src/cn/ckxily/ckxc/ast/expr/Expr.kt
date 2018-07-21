@@ -24,17 +24,25 @@ enum class UnaryOpCode(val str: String) {
 	DePointer("Dereferencing pointer")
 }
 
-enum class BinaryOpCode(val str: String) {
-	Add("Add"),
-	Sub("Substract"),
-	Mul("Multiply"),
-	Div("Divide"),
-	Mod("Mod"),
-	BitwiseAnd("Bitwise and"),
-	BitwiseOr("Bitwise or"),
-	BitwiseXor("Bitwise Xor"),
-	LogicAnd("Logical and"),
-	LogicOr("Logical or"),
+enum class BinaryOpCode(val str: String, val prec: Int) {
+	Assign("Assignment", 0),
+	LogicAnd("Logical and", 10),
+	LogicOr("Logical or", 10),
+	Less("Less than", 20),
+	Greater("Greater than", 20),
+	Equal("Equal to", 20),
+	LEQ("Less than or equal to", 20),
+	GEQ("Greater than or equal to", 20),
+	NEQ("Not equal to", 20),
+	BitwiseAnd("Bitwise and", 30),
+	BitwiseOr("Bitwise or", 30),
+	BitwiseXor("Bitwise Xor", 30),
+	Add("Add", 40),
+	Sub("Substract", 40),
+	Mul("Multiply", 50),
+	Div("Divide", 50),
+	Mod("Mod", 50),
+	UnaryOperation("Unary operations", 110)
 }
 
 val ExprId.description get() = str
@@ -74,7 +82,7 @@ class UnaryExpr(val opCode: UnaryOpCode) : Expr(ExprId.UnaryExpr) {
 	}
 }
 
-class BinaryExpr(open val opCode: BinaryOpCode) : Expr(ExprId.BinaryExpr) {
+class BinaryExpr(val opCode: BinaryOpCode) : Expr(ExprId.BinaryExpr) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
