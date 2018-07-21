@@ -2,10 +2,9 @@ package cn.ckxily.ckxc.main
 
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.type.*
-import cn.ckxily.ckxc.codegen.ASTPrinter
+import cn.ckxily.ckxc.codegen.BetterASTPrinter
 
 fun Array<String>.main() {
-
 	val transUnit = TransUnitDecl()
 
 	run {
@@ -42,7 +41,7 @@ fun Array<String>.main() {
 		null
 	}
 
-	val astConsumer = ASTPrinter()
+	val astConsumer = BetterASTPrinter()
 	transUnit.accept(astConsumer)
 
 	println("done")

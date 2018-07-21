@@ -2,6 +2,7 @@ package cn.ckxily.ckxc.ast.type
 
 import cn.ckxily.ckxc.ast.decl.ClassDecl
 import cn.ckxily.ckxc.ast.decl.EnumDecl
+import cn.ckxily.ckxc.util.addressOf
 
 enum class TypeId {
 	Builtin,
@@ -55,9 +56,9 @@ class ReferenceType(var referenced: Type, specifiers: TypeSpecifiers) : Type(Typ
 }
 
 class ClassType(var decl: ClassDecl, specifiers: TypeSpecifiers) : Type(TypeId.Class, specifiers) {
-	override fun toString() = "${decl.nameStr}(${decl.hashCode()}) $specifiers"
+	override fun toString() = "${decl.nameStr} ${addressOf(decl)} $specifiers"
 }
 
 class EnumType(var decl: EnumDecl, specifiers: TypeSpecifiers) : Type(TypeId.Enum, specifiers) {
-	override fun toString() = "${decl.nameStr}(${decl.hashCode()}) $specifiers"
+	override fun toString() = "${decl.nameStr} ${addressOf(decl)} $specifiers"
 }

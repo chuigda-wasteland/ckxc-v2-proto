@@ -1,6 +1,6 @@
 package cn.ckxily.ckxc.parser.test
 
-import cn.ckxily.ckxc.codegen.ASTPrinter
+import cn.ckxily.ckxc.codegen.BetterASTPrinter
 import cn.ckxily.ckxc.lex.Lexer
 import cn.ckxily.ckxc.parser.Parser
 
@@ -30,5 +30,5 @@ fun Array<String>.main() {
 			let ClassC wtf;
 			let ClassC::EnumE wtf2;
 		}
-	""".trimIndent())).accept(ASTPrinter())
+	""".trimIndent())).accept(BetterASTPrinter())
 }

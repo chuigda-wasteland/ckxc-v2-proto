@@ -13,3 +13,5 @@ sealed class Either<out T, out U> {
 class Left<T>(var obj: T) : Either<T, Nothing>()
 
 class Right<U>(var obj: U) : Either<Nothing, U>()
+
+fun addressOf(any: Any) = "<@${any.hashCode().toString(16)}>"
