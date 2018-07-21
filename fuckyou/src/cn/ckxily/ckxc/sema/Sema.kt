@@ -155,7 +155,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 
 		val castedLhs = actOnImplicitCast(lhs, commonType) ?: unrecoverableError("failed to cast lhs")
 		val castedRhs = actOnImplicitCast(rhs, commonType) ?: unrecoverableError("failed to cast rhs")
-		return BinaryExpr(opCode, actOnLValueToRValueDecay(lhs), actOnLValueToRValueDecay(rhs))
+		return BinaryExpr(opCode, actOnLValueToRValueDecay(castedLhs), actOnLValueToRValueDecay(castedRhs))
 	}
 
 	// TODO this function looks nasty, split it into several parts in further commits.
