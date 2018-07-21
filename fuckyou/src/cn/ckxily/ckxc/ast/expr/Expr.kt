@@ -2,7 +2,11 @@ package cn.ckxily.ckxc.ast.expr
 
 import cn.ckxily.ckxc.codegen.ASTConsumer
 import cn.ckxily.ckxc.ast.decl.Decl
+import cn.ckxily.ckxc.ast.decl.VarDecl
+import cn.ckxily.ckxc.ast.type.BuiltinType
+import cn.ckxily.ckxc.ast.type.BuiltinTypeId
 import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.type.getNoSpecifier
 
 enum class ExprId(val desc: String) {
 	DeclRefExpr("Declaration reference expression"),
@@ -65,15 +69,28 @@ abstract class Expr(val exprId: ExprId) {
 		return cachedValueCategory!!
 	}
 
+	fun getType(): Type {
+		if (cachedType == null) {
+			cachedType = getTypeImpl()
+		}
+		return cachedType!!
+	}
+
+	private var cachedType: Type? = null
+
 	private var cachedValueCategory: ValueCategory? = null
+
+	protected abstract fun getTypeImpl(): Type
 
 	protected abstract fun getValueCategoryImpl(): ValueCategory
 }
 
-class DeclRefExpr(val decl: Decl) : Expr(ExprId.DeclRefExpr) {
+class DeclRefExpr(val decl: VarDecl) : Expr(ExprId.DeclRefExpr) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitDeclRefExpr(this)
 
 	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.LValue
+
+	override fun getTypeImpl(): Type = decl.type
 }
 
 class MemberAccessExpr(val decl: Decl, val base: Expr, val byPointer: Boolean)
@@ -83,14 +100,25 @@ class MemberAccessExpr(val decl: Decl, val base: Expr, val byPointer: Boolean)
 	}
 
 	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.LValue
+
+	override fun getTypeImpl(): Type {
+		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
 }
 
-class IntegralLiteralExpr(val value: Int) : Expr(ExprId.IntegralLiteralExpr) {
+class IntegralLiteralExpr(val value: Long) : Expr(ExprId.IntegralLiteralExpr) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
 	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.RValue
+
+	override fun getTypeImpl(): Type = when (value) {
+		in (Byte.MIN_VALUE .. Byte.MAX_VALUE) -> BuiltinType(BuiltinTypeId.Int8, getNoSpecifier())
+		in (Short.MIN_VALUE .. Short.MAX_VALUE) -> BuiltinType(BuiltinTypeId.Int16, getNoSpecifier())
+		in (Int.MIN_VALUE .. Int.MAX_VALUE) -> BuiltinType(BuiltinTypeId.Int32, getNoSpecifier())
+		else -> BuiltinType(BuiltinTypeId.Int64, getNoSpecifier())
+	}
 }
 
 class FloatingLiteralExpr(val value: Double) : Expr(ExprId.FloatingLiteralExpr) {
@@ -99,28 +127,34 @@ class FloatingLiteralExpr(val value: Double) : Expr(ExprId.FloatingLiteralExpr) 
 	}
 
 	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.RValue
+
+	override fun getTypeImpl(): Type = BuiltinType(BuiltinTypeId.Float, getNoSpecifier())
 }
 
-class UnaryExpr(val opCode: UnaryOpCode) : Expr(ExprId.UnaryExpr) {
+class UnaryExpr(val opCode: UnaryOpCode, val expr: Expr) : Expr(ExprId.UnaryExpr) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
-	override fun getValueCategoryImpl(): ValueCategory = when(opCode) {
+	override fun getValueCategoryImpl(): ValueCategory = when (opCode) {
 		UnaryOpCode.DePointer -> ValueCategory.LValue
 		else -> ValueCategory.RValue
 	}
+
+	override fun getTypeImpl(): Type = expr.getType()
 }
 
-class BinaryExpr(val opCode: BinaryOpCode) : Expr(ExprId.BinaryExpr) {
+class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(ExprId.BinaryExpr) {
 	override fun accept(astConsumer: ASTConsumer): Any? {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
-	override fun getValueCategoryImpl(): ValueCategory = when(opCode) {
+	override fun getValueCategoryImpl(): ValueCategory = when (opCode) {
 		BinaryOpCode.Assign -> ValueCategory.LValue
 		else -> ValueCategory.RValue
 	}
+
+	override fun getTypeImpl(): Type = lhs.getType()
 }
 
 enum class CastOperation(val desc: String) {
@@ -131,6 +165,4 @@ enum class CastOperation(val desc: String) {
 	RemoveConst("")
 }
 
-class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: Type) {
-
-}
+class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: Type)
