@@ -27,6 +27,7 @@ enum class ValueCategory(val desc: String) {
 }
 
 enum class UnaryOpCode(val str: String, val desc: String) {
+	NotUnaryOperator("???", "Not unary operator"),
 	PreInc("++", "Pre increment"),
 	PreDec("--", "Pre decrement"),
 	Positive("+", "Unary positive"),
@@ -38,6 +39,7 @@ enum class UnaryOpCode(val str: String, val desc: String) {
 }
 
 enum class BinaryOpCode(val str: String, val desc: String, val prec: Int) {
+	NotBinaryOperator("???", "Not binary operator", -1),
 	Assign("=", "Assignment", 0),
 	LogicAnd("&&", "Logical and", 10),
 	LogicOr("||", "Logical or", 10),
@@ -64,7 +66,16 @@ val UnaryOpCode.description get() = desc
 
 fun token2Unary(tokenType: TokenType): UnaryOpCode = when (tokenType) {
 	TokenType.Add -> UnaryOpCode.Positive
-	else -> assertionFailed("token not an unary operator!")
+	else -> UnaryOpCode.NotUnaryOperator
+}
+
+fun token2Binary(tokenType: TokenType): BinaryOpCode = when (tokenType) {
+	TokenType.Eq -> BinaryOpCode.Assign
+	TokenType.Add -> BinaryOpCode.Add
+	TokenType.Sub -> BinaryOpCode.Sub
+	TokenType.Mul -> BinaryOpCode.Mul
+	TokenType.Div -> BinaryOpCode.Div
+	else -> BinaryOpCode.NotBinaryOperator
 }
 
 abstract class Expr(val exprId: ExprId) {
@@ -153,9 +164,7 @@ class UnaryExpr(val opCode: UnaryOpCode, val expr: Expr) : Expr(ExprId.UnaryExpr
 }
 
 class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(ExprId.BinaryExpr) {
-	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitBinaryExpr(this)
 
 	override fun getValueCategoryImpl(): ValueCategory = when (opCode) {
 		BinaryOpCode.Assign -> ValueCategory.LValue
@@ -184,9 +193,7 @@ class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: 
 }
 
 class ImplicitDecayExpr(val expr: Expr) : Expr(ExprId.ImplicitDecayExpr) {
-	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitImplicitDecay(this)
 
 	override fun getTypeImpl(): Type = expr.type
 

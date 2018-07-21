@@ -17,6 +17,8 @@ interface ASTConsumer {
 	fun visitExprStmt(exprStmt: ExprStmt): Any?
 	fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any?
 	fun visitIntegralLiteralExpr(integralLiteralExpr: IntegralLiteralExpr): Any?
+	fun visitBinaryExpr(binaryExpr: BinaryExpr): Any?
+	fun visitImplicitDecay(expr: ImplicitDecayExpr): Any?
 }
 
 class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
@@ -105,6 +107,23 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitIntegralLiteralExpr(integralLiteralExpr: IntegralLiteralExpr): Any? {
 		indent(); println("IntegralLiteralExpr ${integralLiteralExpr.value} of type ${integralLiteralExpr.type}")
+		return null
+	}
+
+	override fun visitBinaryExpr(binaryExpr: BinaryExpr): Any? {
+		indent(); println("BinaryExpr ${binaryExpr.opCode}")
+		indentation++
+		binaryExpr.lhs.accept(this)
+		binaryExpr.rhs.accept(this)
+		indentation--
+		return null
+	}
+
+	override fun visitImplicitDecay(expr: ImplicitDecayExpr): Any? {
+		indent(); println("LValueToRValueDecay")
+		indentation++
+		expr.expr.accept(this)
+		indentation--
 		return null
 	}
 }

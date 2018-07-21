@@ -1,9 +1,7 @@
 package cn.ckxily.ckxc.parser
 
 import cn.ckxily.ckxc.ast.decl.*
-import cn.ckxily.ckxc.ast.expr.DeclRefExpr
-import cn.ckxily.ckxc.ast.expr.Expr
-import cn.ckxily.ckxc.ast.expr.IntegralLiteralExpr
+import cn.ckxily.ckxc.ast.expr.*
 import cn.ckxily.ckxc.ast.stmt.CompoundStmt
 import cn.ckxily.ckxc.ast.stmt.DeclStmt
 import cn.ckxily.ckxc.ast.stmt.ExprStmt
@@ -288,16 +286,38 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 		return sema.actOnExprStmt(expr)
 	}
 
-	private fun parseExpr(): Expr {
-		return when (currentToken().tokenType) {
-			TokenType.Id -> parseDeclRefExpr()
-			TokenType.Number -> {
-				val expr = IntegralLiteralExpr(currentToken().value as Long)
-				nextToken()
-				expr
-			}
-			else -> assertionFailed("Unreachable code!")
+	private fun parseExpr(): Expr = parseBinaryExpr(-1)
+
+	private fun parseBinaryExpr(allowedPrec: Int): Expr {
+		var lhs = parseUnaryExpr()
+		var currentOperator = token2Binary(currentToken().tokenType)
+		while (currentOperator != BinaryOpCode.NotBinaryOperator && currentOperator.prec >= allowedPrec) {
+			nextToken()
+
+			val rhs = parseBinaryExpr(currentOperator.prec + 1)
+			lhs = sema.actOnBinaryExpr(lhs, rhs, currentOperator)
+			currentOperator = token2Binary(currentToken().tokenType)
 		}
+		return lhs
+	}
+
+	private fun parseUnaryExpr(): Expr = when (currentToken().tokenType) {
+		TokenType.Id -> parseDeclRefExpr()
+		TokenType.Number -> parseLiteral()
+		else -> assertionFailed("Unreachable code!")
+	}
+
+	private fun parseLiteral(): Expr = when(currentToken().tokenType) {
+		TokenType.Number -> {
+			val expr = IntegralLiteralExpr(currentToken().value as Long)
+			nextToken()
+			expr
+		}
+		else -> assertionFailed("Unreachable code!")
+	}
+
+	private fun parseMemberAccessExpr(): Expr {
+		TODO("not implemented")
 	}
 
 	private fun parseDeclRefExpr(): DeclRefExpr {
