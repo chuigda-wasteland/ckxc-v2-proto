@@ -16,6 +16,7 @@ interface ASTConsumer {
 	fun visitDeclStmt(declStmt: DeclStmt): Any?
 	fun visitExprStmt(exprStmt: ExprStmt): Any?
 	fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any?
+	fun visitIntegralLiteralExpr(integralLiteralExpr: IntegralLiteralExpr): Any?
 }
 
 class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
@@ -99,6 +100,11 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitDeclRefExpr(declRefExpr: DeclRefExpr): Any? {
 		indent(); println("DeclRefExpr referencing ${declRefExpr.decl.nameStr} ${addressOf(declRefExpr.decl)}")
+		return null
+	}
+
+	override fun visitIntegralLiteralExpr(integralLiteralExpr: IntegralLiteralExpr): Any? {
+		indent(); println("IntegralLiteralExpr ${integralLiteralExpr.value} of type ${integralLiteralExpr.getType()}")
 		return null
 	}
 }

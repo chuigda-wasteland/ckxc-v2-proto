@@ -107,9 +107,7 @@ class MemberAccessExpr(val decl: Decl, val base: Expr, val byPointer: Boolean)
 }
 
 class IntegralLiteralExpr(val value: Long) : Expr(ExprId.IntegralLiteralExpr) {
-	override fun accept(astConsumer: ASTConsumer): Any? {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitIntegralLiteralExpr(this)
 
 	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.RValue
 

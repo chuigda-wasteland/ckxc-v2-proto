@@ -3,6 +3,7 @@ package cn.ckxily.ckxc.parser
 import cn.ckxily.ckxc.ast.decl.*
 import cn.ckxily.ckxc.ast.expr.DeclRefExpr
 import cn.ckxily.ckxc.ast.expr.Expr
+import cn.ckxily.ckxc.ast.expr.IntegralLiteralExpr
 import cn.ckxily.ckxc.ast.stmt.CompoundStmt
 import cn.ckxily.ckxc.ast.stmt.DeclStmt
 import cn.ckxily.ckxc.ast.stmt.ExprStmt
@@ -131,9 +132,9 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 			nextToken()
 			expectAndConsume(TokenType.Eq)
 			expect(TokenType.Number)
-			val value = currentToken().value!! as Int
+			val value = currentToken().value!! as Long
 			nextToken()
-			val enumerator = sema.actOnEnumerator(sema.currentScope, enumDecl, name, value)
+			val enumerator = sema.actOnEnumerator(sema.currentScope, enumDecl, name, value.toInt())
 			sema.actOnDeclInContext(enumerator, enumDecl)
 			if (currentToken().tokenType == TokenType.Comma) {
 				nextToken()
@@ -257,7 +258,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 	private fun parseStmt(): Stmt =
 		when (currentToken().tokenType) {
 			TokenType.Let -> parseDeclStmt()
-			TokenType.Id -> parseExprStmt()
+			TokenType.Id, TokenType.Number -> parseExprStmt()
 			TokenType.LeftBrace -> parseCompoundStmt()
 			else -> unrecoverableError("Fuck you!")
 		}
@@ -290,6 +291,11 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 	private fun parseExpr(): Expr {
 		return when (currentToken().tokenType) {
 			TokenType.Id -> parseDeclRefExpr()
+			TokenType.Number -> {
+				val expr = IntegralLiteralExpr(currentToken().value as Long)
+				nextToken()
+				expr
+			}
 			else -> assertionFailed("Unreachable code!")
 		}
 	}
@@ -303,7 +309,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 			unrecoverableError("Ambiguous!")
 		}
 
-		return sema.actOnDeclRefExpr(decl.first())
+		return sema.actOnDeclRefExpr(decl.first() as? VarDecl ?: unrecoverableError("Expected VarDecl!"))
 	}
 
 	private fun expect(tokenType: TokenType) {

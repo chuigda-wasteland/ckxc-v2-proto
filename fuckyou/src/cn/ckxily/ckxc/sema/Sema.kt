@@ -139,7 +139,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 
 	fun actOnDeclStmt(decl: Decl): DeclStmt = DeclStmt(decl)
 
-	fun actOnDeclRefExpr(decl: Decl): DeclRefExpr = DeclRefExpr(decl)
+	fun actOnDeclRefExpr(decl: VarDecl): DeclRefExpr = DeclRefExpr(decl)
 
 	fun actOnExprStmt(expr: Expr): ExprStmt = ExprStmt(expr)
 }

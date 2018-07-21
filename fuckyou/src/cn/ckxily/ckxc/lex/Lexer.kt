@@ -60,7 +60,7 @@ internal class LexerStateMachine(private val srcCode: String) {
 	}
 
 	private fun lexNumber(): Token {
-		return Token(TokenType.Number, lexFullString(number).toInt())
+		return Token(TokenType.Number, lexFullString(number).toLong())
 	}
 
 	private fun lexSymbol(): Token {

@@ -27,6 +27,8 @@ fun Array<String>.main() {
 			{
 				let ClassA::ClassB *someFuck;
 				someFuck;
+				42;
+				42;
 			}
 			// someFuck;
 		}
