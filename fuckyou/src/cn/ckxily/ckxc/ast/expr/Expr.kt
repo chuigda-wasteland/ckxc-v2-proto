@@ -66,6 +66,9 @@ val UnaryOpCode.description get() = desc
 
 fun token2Unary(tokenType: TokenType): UnaryOpCode = when (tokenType) {
 	TokenType.Add -> UnaryOpCode.Positive
+	TokenType.Sub -> UnaryOpCode.Negative
+	TokenType.Amp -> UnaryOpCode.AddressOf
+	TokenType.Mul -> UnaryOpCode.DePointer
 	else -> UnaryOpCode.NotUnaryOperator
 }
 
@@ -75,6 +78,14 @@ fun token2Binary(tokenType: TokenType): BinaryOpCode = when (tokenType) {
 	TokenType.Sub -> BinaryOpCode.Sub
 	TokenType.Mul -> BinaryOpCode.Mul
 	TokenType.Div -> BinaryOpCode.Div
+	TokenType.Lt -> BinaryOpCode.Less
+	TokenType.Gt -> BinaryOpCode.Greater
+	TokenType.DupEq -> BinaryOpCode.Equal
+	TokenType.Neq -> BinaryOpCode.NEQ
+	TokenType.Amp -> BinaryOpCode.BitwiseAnd
+	TokenType.Pipe -> BinaryOpCode.BitwiseOr
+	TokenType.AmpAmp -> BinaryOpCode.LogicAnd
+	TokenType.PipePipe -> BinaryOpCode.LogicOr
 	else -> BinaryOpCode.NotBinaryOperator
 }
 
@@ -163,7 +174,8 @@ class UnaryExpr(val opCode: UnaryOpCode, val expr: Expr) : Expr(ExprId.UnaryExpr
 	override fun getTypeImpl(): Type = expr.type
 }
 
-class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(ExprId.BinaryExpr) {
+class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr, private val cachedType: Type)
+	: Expr(ExprId.BinaryExpr) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitBinaryExpr(this)
 
 	override fun getValueCategoryImpl(): ValueCategory = when (opCode) {
@@ -171,7 +183,7 @@ class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr) : Expr(
 		else -> ValueCategory.RValue
 	}
 
-	override fun getTypeImpl(): Type = lhs.type
+	override fun getTypeImpl(): Type = cachedType
 }
 
 enum class CastOperation(val desc: String) {

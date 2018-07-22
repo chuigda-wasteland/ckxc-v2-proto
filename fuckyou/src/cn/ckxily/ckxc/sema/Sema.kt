@@ -141,19 +141,56 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnExprStmt(expr: Expr): ExprStmt = ExprStmt(expr)
 
 	fun actOnBinaryExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
-		val commonType =
-			TypeUtility.commonType(lhs.type, rhs.type) ?: unrecoverableError("No common type!")
-
-		if (opCode == BinaryOpCode.LogicAnd	|| opCode == BinaryOpCode.LogicOr) {
-			if (commonType.typeId != TypeId.Builtin
-					&& (commonType as BuiltinType).builtinTypeId == BuiltinTypeId.Boolean) {
-				unrecoverableError("Non-bool type for logical operations!")
-			}
+		/// TODO add support for operator overloading
+		return when (opCode) {
+			BinaryOpCode.Assign -> actOnAssignmentExpr(lhs, rhs, opCode)
+			BinaryOpCode.LogicAnd, BinaryOpCode.LogicOr -> actOnLogicalExpr(lhs, rhs, opCode)
+			else -> actOnAlgebraExpr(lhs, rhs, opCode)
 		}
+	}
+
+	fun actOnAssignmentExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
+		assert(opCode == BinaryOpCode.Assign)
+		if (lhs.valueCategory != ValueCategory.LValue) {
+			unrecoverableError("Expected lvalue at the left hand side of assignment expression")
+		}
+		if (lhs.type.specifiers.isConst) {
+			unrecoverableError("Expected non-const value at left hand side of assignment expression")
+		}
+
+		val castedRhs = actOnImplicitCast(rhs, lhs.type) ?: unrecoverableError("failed to cast assignee")
+		return BinaryExpr(opCode, lhs, actOnLValueToRValueDecay(castedRhs), lhs.type)
+	}
+
+	fun actOnLogicalExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
+		val castedLhsType =
+			lhs.type as? BuiltinType ?: unrecoverableError("Non-bool types used in logical expression")
+		val castedRhsType =
+			rhs.type as? BuiltinType ?: unrecoverableError("Non-bool types used in logical expression")
+		if (castedLhsType.builtinTypeId != BuiltinTypeId.Boolean
+				|| castedRhsType.builtinTypeId != BuiltinTypeId.Boolean) {
+			unrecoverableError("Non-bool types used in logical expression")
+		}
+
+		return BinaryExpr(
+				opCode,
+				actOnLValueToRValueDecay(lhs),
+				actOnLValueToRValueDecay(rhs),
+				BuiltinType(BuiltinTypeId.Boolean, getNoSpecifier()))
+	}
+
+	fun actOnAlgebraExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
+		val commonType =
+				TypeUtility.commonType(lhs.type, rhs.type) ?: unrecoverableError("No common type!")
 
 		val castedLhs = actOnImplicitCast(lhs, commonType) ?: unrecoverableError("failed to cast lhs")
 		val castedRhs = actOnImplicitCast(rhs, commonType) ?: unrecoverableError("failed to cast rhs")
-		return BinaryExpr(opCode, actOnLValueToRValueDecay(castedLhs), actOnLValueToRValueDecay(castedRhs))
+		return BinaryExpr(opCode, actOnLValueToRValueDecay(castedLhs), actOnLValueToRValueDecay(castedRhs),
+											if (opCode == BinaryOpCode.Less || opCode == BinaryOpCode.Greater
+													|| opCode == BinaryOpCode.Equal || opCode == BinaryOpCode.NEQ
+													|| opCode == BinaryOpCode.GEQ || opCode == BinaryOpCode.LEQ)
+												BuiltinType(BuiltinTypeId.Boolean, getNoSpecifier())
+											else commonType)
 	}
 
 	// TODO this function looks nasty, split it into several parts in further commits.
@@ -164,6 +201,10 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		var currentExpr = expr
 		var builtinSrcType = expr.type as BuiltinType
 		val builtinDesiredType = desired as BuiltinType
+
+		if (builtinSrcType.builtinTypeId == builtinDesiredType.builtinTypeId) {
+			return currentExpr
+		}
 
 		if (!builtinDesiredType.specifiers.isConst && builtinSrcType.specifiers.isConst
 				|| !builtinDesiredType.specifiers.isVolatile && builtinSrcType.specifiers.isVolatile) {

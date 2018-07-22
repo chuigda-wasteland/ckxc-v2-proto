@@ -100,6 +100,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 			TokenType.Vi32 -> BuiltinType(BuiltinTypeId.Int32, getNoSpecifier())
 			TokenType.Vi64 -> BuiltinType(BuiltinTypeId.Int64, getNoSpecifier())
 			TokenType.Vr32 -> BuiltinType(BuiltinTypeId.Float, getNoSpecifier())
+			TokenType.Boolean -> BuiltinType(BuiltinTypeId.Boolean, getNoSpecifier())
 			else -> return null
 		}
 		nextToken()

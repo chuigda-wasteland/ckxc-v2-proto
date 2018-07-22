@@ -98,7 +98,7 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 	}
 
 	override fun visitBinaryExpr(binaryExpr: BinaryExpr): Any? {
-		indent(); println("BinaryExpr ${binaryExpr.opCode}")
+		indent(); println("BinaryExpr `${binaryExpr.opCode.str}' of type ${binaryExpr.type}, ${binaryExpr.valueCategory.desc}")
 		withIndent {
 			binaryExpr.lhs.accept(this)
 			binaryExpr.rhs.accept(this)
@@ -115,8 +115,8 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 	override fun visitImplicitCastExpr(expr: ImplicitCastExpr): Any? {
 		indent()
 		when (expr.castOp) {
-			CastOperation.AddConst -> println("ImplicitQualifyConst")
-			CastOperation.AddVolatile -> println("ImplicitQualifyVolatile")
+			CastOperation.AddConst -> println("ImplicitQualifyConst from ${expr.expr.type} to ${expr.destType}")
+			CastOperation.AddVolatile -> println("ImplicitQualifyVolatile from ${expr.expr.type} to ${expr.destType}")
 			CastOperation.IntegerWidenCast -> {
 				println("ImplicitIntegerWiden from ${expr.expr.type} to ${expr.destType}")
 				withIndent { expr.expr.accept(this) }
