@@ -48,7 +48,8 @@ class Scope(val parent: Scope? = null,
 		return LinkedList(basicDecl)
 	}
 
-	fun lookup(maybeQualifiedName: Either<String, QualifiedName>): List<Decl> = maybeQualifiedName.either(::lookup, ::lookup)
+	fun lookup(maybeQualifiedName: Either<String, QualifiedName>): List<Decl>
+		= maybeQualifiedName.either(::lookup, ::lookup)
 }
 
 tailrec fun dlLookup(scope: Scope, name: String): List<Decl> {
