@@ -72,7 +72,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 			when (currentToken().tokenType) {
 				TokenType.Const -> modifiedType.specifiers.isConst = true
 				TokenType.Volatile -> modifiedType.specifiers.isVolatile = true
-				TokenType.Mul -> modifiedType = PointerType(modifiedType, getNoSpecifier())
+				TokenType.Asterisk -> modifiedType = PointerType(modifiedType, getNoSpecifier())
 				TokenType.Amp -> modifiedType = ReferenceType(modifiedType, getNoSpecifier())
 				else -> return modifiedType
 			}

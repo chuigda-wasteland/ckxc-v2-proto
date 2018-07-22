@@ -7,7 +7,6 @@ import cn.ckxily.ckxc.ast.type.BuiltinType
 import cn.ckxily.ckxc.ast.type.BuiltinTypeId
 import cn.ckxily.ckxc.ast.type.Type
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
-import cn.ckxily.ckxc.util.assertionFailed
 import cn.ckxily.ckxc.lex.TokenType
 
 enum class ExprId(val desc: String) {
@@ -60,24 +59,21 @@ enum class BinaryOpCode(val str: String, val desc: String, val prec: Int) {
 	UnaryOperation("", "Unary operations", 110)
 }
 
-val ExprId.description get() = desc
-
-val UnaryOpCode.description get() = desc
-
 fun token2Unary(tokenType: TokenType): UnaryOpCode = when (tokenType) {
-	TokenType.Add -> UnaryOpCode.Positive
+	TokenType.Plus -> UnaryOpCode.Positive
 	TokenType.Sub -> UnaryOpCode.Negative
 	TokenType.Amp -> UnaryOpCode.AddressOf
-	TokenType.Mul -> UnaryOpCode.DePointer
+	TokenType.Asterisk -> UnaryOpCode.DePointer
+	TokenType.Not -> UnaryOpCode.Not
 	else -> UnaryOpCode.NotUnaryOperator
 }
 
 fun token2Binary(tokenType: TokenType): BinaryOpCode = when (tokenType) {
 	TokenType.Eq -> BinaryOpCode.Assign
-	TokenType.Add -> BinaryOpCode.Add
+	TokenType.Plus -> BinaryOpCode.Add
 	TokenType.Sub -> BinaryOpCode.Sub
-	TokenType.Mul -> BinaryOpCode.Mul
-	TokenType.Div -> BinaryOpCode.Div
+	TokenType.Asterisk -> BinaryOpCode.Mul
+	TokenType.Slash -> BinaryOpCode.Div
 	TokenType.Lt -> BinaryOpCode.Less
 	TokenType.Gt -> BinaryOpCode.Greater
 	TokenType.DupEq -> BinaryOpCode.Equal
