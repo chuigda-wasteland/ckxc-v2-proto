@@ -202,6 +202,13 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 		nextToken()
 		val varDecl = sema.actOnVarDecl(sema.currentScope, name, type)
 		sema.actOnDeclInScope(varDecl)
+		if (currentToken().tokenType == TokenType.Eq) {
+			nextToken()
+			varDecl.init =
+					sema.actOnLValueToRValueDecay(
+							sema.actOnImplicitCast(
+									parseExpr(), varDecl.type) ?: unrecoverableError("Failed to cast initializer!"))
+		}
 		return varDecl
 	}
 

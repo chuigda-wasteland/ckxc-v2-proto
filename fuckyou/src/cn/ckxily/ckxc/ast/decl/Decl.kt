@@ -4,6 +4,7 @@ import cn.ckxily.ckxc.ast.stmt.CompoundStmt
 import cn.ckxily.ckxc.ast.type.ClassType
 import cn.ckxily.ckxc.ast.type.EnumType
 import cn.ckxily.ckxc.ast.type.Type
+import cn.ckxily.ckxc.ast.expr.Expr
 import cn.ckxily.ckxc.ast.type.getNoSpecifier
 import cn.ckxily.ckxc.codegen.ASTConsumer
 
@@ -44,7 +45,7 @@ class TransUnitDecl : DeclContext(DeclContextKind.TransUnitContext, DeclKind.Tra
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitTransUnitDecl(this)
 }
 
-open class VarDecl(override var nameStr: String, var type: Type)
+open class VarDecl(override var nameStr: String, var type: Type, var init: Expr? = null)
 	: Decl(DeclKind.VarDecl) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitVarDecl(this)
 }

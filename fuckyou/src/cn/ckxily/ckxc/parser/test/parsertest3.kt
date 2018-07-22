@@ -10,9 +10,9 @@ fun Array<String>.main() {
 
 	parser.parse(lexer.lex("""
 		func test() {
-			let vi32 a;
-			let vi32 b;
-			let vi32 c;
+			let vi32 a = 1;
+			let vi32 b = 2;
+			let vi32 c = 3;
 			let vi16 d;
 			let vi8 e;
 			let bool result;

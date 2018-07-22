@@ -38,6 +38,10 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 
 	override fun visitVarDecl(varDecl: VarDecl): Any? {
 		indent(); println("VarDecl ${varDecl.nameStr} ${addressOf(varDecl)} of type ${varDecl.type}")
+		if (varDecl.init != null) {
+			indent(); println("Initialization")
+			withIndent { varDecl.init!!.accept(this) }
+		}
 		return null
 	}
 
