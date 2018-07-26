@@ -198,13 +198,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun dehugify(type: Type) = if (type.typeId == TypeId.Reference) (type as ReferenceType).referenced else type
 	fun botherIf(condi: Boolean, desc: String) = if (condi) unrecoverableError(desc) else 0
 
-	fun canImplicitCast(fromType: Type, destType: Type, bother: Boolean = false,
-											fromValueCategory: ValueCategory? = null,
-											destValueCategory: ValueCategory? = null): Boolean {
-		if (fromValueCategory != null) {
-			checkValueCategoryForCast(fromValueCategory, destValueCategory!!, bother, destType)
-		}
-
+	fun canImplicitCast(fromType: Type, destType: Type, bother: Boolean = false): Boolean {
 		val castedFromType = dehugify(fromType)
 		val castedDestType = dehugify(destType)
 
@@ -225,7 +219,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		return false
 	}
 
-	private fun checkValueCategoryForCast(fromValueCategory: ValueCategory,
+	fun checkValueCategoryForCast(fromValueCategory: ValueCategory,
 																				destValueCategory: ValueCategory,
 																				bother: Boolean, destType: Type): Boolean {
 		if (fromValueCategory == ValueCategory.RValue && destValueCategory == ValueCategory.LValue) {
