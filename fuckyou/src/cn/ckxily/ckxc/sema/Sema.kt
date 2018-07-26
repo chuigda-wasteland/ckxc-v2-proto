@@ -154,7 +154,7 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		if (lhs.valueCategory != ValueCategory.LValue) {
 			unrecoverableError("Expected lvalue at the left hand side of assignment expression")
 		}
-		if (lhs.type.specifiers.isConst) {
+		if (lhs.type.qualifiers.isConst) {
 			unrecoverableError("Expected non-const value at left hand side of assignment expression")
 		}
 
@@ -181,7 +181,9 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 
 	fun actOnAlgebraExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
 		val commonType =
-				TypeUtility.commonType(lhs.type, rhs.type) ?: unrecoverableError("No common type!")
+				TypeUtility.commonBuiltinType(
+						lhs.type as BuiltinType,
+						rhs.type as BuiltinType) ?: unrecoverableError("No common type!")
 
 		val castedLhs = actOnImplicitCast(lhs, commonType) ?: unrecoverableError("failed to cast lhs")
 		val castedRhs = actOnImplicitCast(rhs, commonType) ?: unrecoverableError("failed to cast rhs")
@@ -191,6 +193,55 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 													|| opCode == BinaryOpCode.GEQ || opCode == BinaryOpCode.LEQ)
 												BuiltinType(BuiltinTypeId.Boolean, getNoSpecifier())
 											else commonType)
+	}
+
+	fun dehugify(type: Type) = if (type.typeId == TypeId.Reference) (type as ReferenceType).referenced else type
+	fun botherIf(condi: Boolean, desc: String) = if (condi) unrecoverableError(desc) else 0
+
+	fun canImplicitCast(fromType: Type, destType: Type, bother: Boolean = false,
+											fromValueCategory: ValueCategory? = null,
+											destValueCategory: ValueCategory? = null): Boolean {
+		if (fromValueCategory != null) {
+			checkValueCategoryForCast(fromValueCategory, destValueCategory!!, bother, destType)
+		}
+
+		val castedFromType = dehugify(fromType)
+		val castedDestType = dehugify(destType)
+
+		@Suppress("NON_EXHAUSTIVE_WHEN")
+		when (castedFromType.qualifiers.compareWith(castedDestType.qualifiers)) {
+			TypeQualifiers.CompareResult.Nonsense, TypeQualifiers.CompareResult.LessQualified -> {
+				botherIf(bother, "反正是qualifier出问题了你看着办吧")
+				return false
+			}
+		}
+
+		if (castedFromType.typeId == TypeId.Builtin && castedDestType.typeId == TypeId.Builtin) {
+			return canImplicitCastBuiltin(castedFromType as BuiltinType, castedDestType as BuiltinType, bother)
+		}
+
+		/// TODO handle user-defined conversion stuffs
+
+		return false
+	}
+
+	private fun checkValueCategoryForCast(fromValueCategory: ValueCategory,
+																				destValueCategory: ValueCategory,
+																				bother: Boolean, destType: Type): Boolean {
+		if (fromValueCategory == ValueCategory.RValue && destValueCategory == ValueCategory.LValue) {
+			botherIf(bother, "Shouldn't use rvalue when a lvalue is required")
+			return false
+		} else if (fromValueCategory == ValueCategory.RValue
+				&& destType.typeId == TypeId.Reference
+				&& !(destType as ReferenceType).referenced.qualifiers.isConst) {
+			botherIf(bother, "Binding rvalue to non-const lvalue reference")
+			return false
+		}
+		return true
+	}
+
+	fun canImplicitCastBuiltin(fromType: BuiltinType, destType: BuiltinType, bother: Boolean): Boolean {
+		return false
 	}
 
 	// TODO this function looks nasty, split it into several parts in further commits.
@@ -206,20 +257,20 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 			return currentExpr
 		}
 
-		if (!builtinDesiredType.specifiers.isConst && builtinSrcType.specifiers.isConst
-				|| !builtinDesiredType.specifiers.isVolatile && builtinSrcType.specifiers.isVolatile) {
+		if (!builtinDesiredType.qualifiers.isConst && builtinSrcType.qualifiers.isConst
+				|| !builtinDesiredType.qualifiers.isVolatile && builtinSrcType.qualifiers.isVolatile) {
 			return null
 		}
 
-		if (builtinDesiredType.specifiers.isConst && !builtinSrcType.specifiers.isConst) {
+		if (builtinDesiredType.qualifiers.isConst && !builtinSrcType.qualifiers.isConst) {
 			builtinSrcType = qualType(builtinSrcType,
-						if (builtinSrcType.specifiers.isVolatile) getCVSpecifiers() else getCSpecifier()) as BuiltinType
+						if (builtinSrcType.qualifiers.isVolatile) getCVSpecifiers() else getCSpecifier()) as BuiltinType
 			currentExpr = ImplicitCastExpr(CastOperation.AddConst, currentExpr, builtinSrcType)
 		}
 
-		if (builtinDesiredType.specifiers.isVolatile && !builtinSrcType.specifiers.isVolatile) {
+		if (builtinDesiredType.qualifiers.isVolatile && !builtinSrcType.qualifiers.isVolatile) {
 			builtinSrcType = qualType(builtinSrcType,
-							if (builtinSrcType.specifiers.isConst) getCVSpecifiers() else getVSpecifier()) as BuiltinType
+							if (builtinSrcType.qualifiers.isConst) getCVSpecifiers() else getVSpecifier()) as BuiltinType
 			currentExpr = ImplicitCastExpr(CastOperation.AddVolatile, currentExpr, builtinSrcType)
 		}
 

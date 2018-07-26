@@ -3,7 +3,6 @@ package cn.ckxily.ckxc.ast.type
 import cn.ckxily.ckxc.ast.decl.ClassDecl
 import cn.ckxily.ckxc.ast.decl.EnumDecl
 import cn.ckxily.ckxc.util.addressOf
-import java.awt.Point
 
 enum class TypeId {
 	Builtin,
@@ -25,7 +24,7 @@ enum class BuiltinTypeId(val str: String, val rank: Int) {
 	Boolean("Boolean", -1)
 }
 
-data class TypeSpecifiers(var isConst: Boolean, var isVolatile: Boolean) {
+data class TypeQualifiers(var isConst: Boolean, var isVolatile: Boolean) {
 	override fun toString() = buildString {
 		if (isConst) append("Const")
 		if (isVolatile) {
@@ -35,41 +34,73 @@ data class TypeSpecifiers(var isConst: Boolean, var isVolatile: Boolean) {
 			append("Volatile")
 		}
 	}
+
+	/// TODO replace the implementation then
+	enum class CompareResult { LessQualified, MoreQualified, Equal, Nonsense }
+	fun compareWith(that: TypeQualifiers): CompareResult {
+		if (this.isConst == that.isConst && this.isVolatile == that.isVolatile) {
+			return CompareResult.Equal
+		}
+		else if (!this.isConst && that.isConst) {
+			if (this.isVolatile && !that.isVolatile) {
+				return CompareResult.Nonsense
+			}
+			return CompareResult.LessQualified
+		}
+		else if (!this.isVolatile && that.isVolatile) {
+			if (this.isConst && !that.isConst) {
+				return CompareResult.Nonsense
+			}
+			return CompareResult.LessQualified
+		}
+		else if (this.isConst && !that.isConst) {
+			if (!this.isVolatile && that.isVolatile) {
+				return CompareResult.Nonsense
+			}
+			return CompareResult.MoreQualified
+		}
+		else {
+			if (!this.isConst && that.isConst) {
+				return CompareResult.Nonsense
+			}
+			return CompareResult.MoreQualified
+		}
+	}
 }
 
-fun getCVSpecifiers() = TypeSpecifiers(true, true)
-fun getCSpecifier() = TypeSpecifiers(true, false)
-fun getVSpecifier() = TypeSpecifiers(false, true)
-fun getNoSpecifier() = TypeSpecifiers(false, false)
+fun getCVSpecifiers() = TypeQualifiers(true, true)
+fun getCSpecifier() = TypeQualifiers(true, false)
+fun getVSpecifier() = TypeQualifiers(false, true)
+fun getNoSpecifier() = TypeQualifiers(false, false)
 
-fun qualType(origin: Type, specifiers: TypeSpecifiers): Type = origin.deepCopy().also{it.specifiers = specifiers}
+fun qualType(origin: Type, qualifiers: TypeQualifiers): Type = origin.fork().also{it.qualifiers = qualifiers}
 
-sealed class Type(var typeId: TypeId, var specifiers: TypeSpecifiers) {
+sealed class Type(var typeId: TypeId, var qualifiers: TypeQualifiers) {
 	abstract override fun toString(): String
-	abstract fun deepCopy(): Type
+	abstract fun fork(): Type
 }
 
-class BuiltinType(val builtinTypeId: BuiltinTypeId, specifiers: TypeSpecifiers) : Type(TypeId.Builtin, specifiers) {
-	override fun toString() = "${builtinTypeId.str} $specifiers"
-	override fun deepCopy(): Type = BuiltinType(builtinTypeId, specifiers)
+class BuiltinType(val builtinTypeId: BuiltinTypeId, qualifiers: TypeQualifiers) : Type(TypeId.Builtin, qualifiers) {
+	override fun toString() = "${builtinTypeId.str} $qualifiers"
+	override fun fork(): Type = BuiltinType(builtinTypeId, qualifiers)
 }
 
-class PointerType(var pointee: Type, specifiers: TypeSpecifiers) : Type(TypeId.Pointer, specifiers) {
-	override fun toString() = "$specifiers pointer to $pointee"
-	override fun deepCopy(): Type = PointerType(pointee, specifiers)
+class PointerType(var pointee: Type, qualifiers: TypeQualifiers) : Type(TypeId.Pointer, qualifiers) {
+	override fun toString() = "$qualifiers pointer to $pointee"
+	override fun fork(): Type = PointerType(pointee, qualifiers)
 }
 
-class ReferenceType(var referenced: Type, specifiers: TypeSpecifiers) : Type(TypeId.Reference, specifiers) {
-	override fun toString() = "$specifiers reference to $referenced"
-	override fun deepCopy(): Type = ReferenceType(referenced, specifiers)
+class ReferenceType(var referenced: Type, qualifiers: TypeQualifiers) : Type(TypeId.Reference, qualifiers) {
+	override fun toString() = "$qualifiers reference to $referenced"
+	override fun fork(): Type = ReferenceType(referenced, qualifiers)
 }
 
-class ClassType(var decl: ClassDecl, specifiers: TypeSpecifiers) : Type(TypeId.Class, specifiers) {
-	override fun toString() = "${decl.nameStr} ${addressOf(decl)} $specifiers"
-	override fun deepCopy(): Type = ClassType(decl, specifiers)
+class ClassType(var decl: ClassDecl, qualifiers: TypeQualifiers) : Type(TypeId.Class, qualifiers) {
+	override fun toString() = "${decl.nameStr} ${addressOf(decl)} $qualifiers"
+	override fun fork(): Type = ClassType(decl, qualifiers)
 }
 
-class EnumType(var decl: EnumDecl, specifiers: TypeSpecifiers) : Type(TypeId.Enum, specifiers) {
-	override fun toString() = "${decl.nameStr} ${addressOf(decl)} $specifiers"
-	override fun deepCopy(): Type = EnumType(decl, specifiers)
+class EnumType(var decl: EnumDecl, qualifiers: TypeQualifiers) : Type(TypeId.Enum, qualifiers) {
+	override fun toString() = "${decl.nameStr} ${addressOf(decl)} $qualifiers"
+	override fun fork(): Type = EnumType(decl, qualifiers)
 }
