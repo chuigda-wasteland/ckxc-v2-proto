@@ -25,14 +25,31 @@ class Scope(val parent: Scope? = null,
 		decls.remove(decl)
 	}
 
+	fun lookupVarDeclLocally(name: String) =
+			lookupLocally(name).filter { decl -> postSelect(decl, LookupKind.LookupVarDecl) }
+
+	fun lookupFuncLocally(name: String) =
+			lookupLocally(name).filter { decl -> postSelect(decl, LookupKind.LookupFunc) }
+
+	fun lookupClassLocally(name: String) =
+			lookupLocally(name).filter { decl -> postSelect(decl, LookupKind.LookupClass) }
+
+	fun lookupEnumLocally(name: String) =
+			lookupLocally(name).filter { decl -> postSelect(decl, LookupKind.LookupEnum) }
+
+	fun lookupASTContextLocally(name: String) =
+			lookupLocally(name).filter { decl -> postSelect(decl, LookupKind.LookupASTContext) }
+
 	fun lookupLocally(name: String) = decls.filter { decl -> decl.nameStr?.equals(name) ?: false }
 
-	private fun lookup(name: String): List<Decl> = dlLookup(this, name)
+	enum class LookupKind { LookupEverything, LookupVarDecl, LookupClass, LookupEnum, LookupASTContext, LookupFunc }
 
-	private fun lookup(qualifiedName: QualifiedName): List<Decl> {
-		var basicDecl = dlLookup(this, qualifiedName.nameChains.first())
+	private fun lookup(name: String, lookupKind: LookupKind): List<Decl> = dlLookup(this, name, lookupKind)
+
+	private fun lookup(qualifiedName: QualifiedName, lookupKind: LookupKind): List<Decl> {
+		var basicDecl = dlLookup(this, qualifiedName.nameChains.first(), LookupKind.LookupASTContext)
 		var i = 1
-		while (i < qualifiedName.nameChains.size) {
+		while (i < qualifiedName.nameChains.size - 1) {
 			if (basicDecl.size != 1) {
 				unrecoverableError("懒癌发作不想写错误信息了!")
 			}
@@ -45,17 +62,37 @@ class Scope(val parent: Scope? = null,
 			i += 1
 		}
 
-		return LinkedList(basicDecl)
+		return LinkedList(basicDecl).filter { decl -> postSelect(decl, lookupKind) }
 	}
 
-	fun lookup(maybeQualifiedName: Either<String, QualifiedName>): List<Decl>
-		= maybeQualifiedName.either(::lookup, ::lookup)
+	private fun postSelect(decl: Decl, lookupKind: LookupKind): Boolean = when (lookupKind) {
+		LookupKind.LookupEverything -> true
+		LookupKind.LookupVarDecl -> decl.declKind == DeclKind.VarDecl
+		LookupKind.LookupClass -> decl.declKind == DeclKind.ClassDecl
+		LookupKind.LookupEnum -> decl.declKind == DeclKind.EnumDecl
+		LookupKind.LookupASTContext -> decl.declKind == DeclKind.ClassDecl || decl.declKind == DeclKind.EnumDecl
+		LookupKind.LookupFunc -> decl.declKind == DeclKind.FuncDecl
+	}
+
+	fun lookup(maybeQualifiedName: Either<String, QualifiedName>, lookupKind: LookupKind): List<Decl> =
+			when (maybeQualifiedName) {
+				is Left -> lookup(maybeQualifiedName.asLeft(), lookupKind)
+				is Right -> lookup(maybeQualifiedName.asRight(), lookupKind)
+			}
 }
 
-tailrec fun dlLookup(scope: Scope, name: String): List<Decl> {
-	val localResult = scope.lookupLocally(name)
+tailrec fun dlLookup(scope: Scope, name: String, lookupKind: Scope.LookupKind): List<Decl> {
+	val localResult = when(lookupKind) {
+		Scope.LookupKind.LookupVarDecl -> scope.lookupVarDeclLocally(name)
+		Scope.LookupKind.LookupFunc -> scope.lookupFuncLocally(name)
+		Scope.LookupKind.LookupClass -> scope.lookupClassLocally(name)
+		Scope.LookupKind.LookupEnum -> scope.lookupEnumLocally(name)
+		Scope.LookupKind.LookupASTContext -> scope.lookupASTContextLocally(name)
+		Scope.LookupKind.LookupEverything -> scope.lookupLocally(name)
+	}
+
 	if (localResult.isEmpty() && scope.parent != null) {
-		return dlLookup(scope.parent, name)
+		return dlLookup(scope.parent, name, lookupKind)
 	}
 	return localResult
 }

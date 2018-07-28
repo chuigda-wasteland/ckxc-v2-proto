@@ -10,6 +10,7 @@ import cn.ckxily.ckxc.ast.type.*
 import cn.ckxily.ckxc.util.unrecoverableError
 import cn.ckxily.ckxc.lex.Token
 import cn.ckxily.ckxc.lex.TokenType
+import cn.ckxily.ckxc.sema.Scope
 import cn.ckxily.ckxc.sema.Sema
 import cn.ckxily.ckxc.util.*
 
@@ -83,7 +84,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 	private fun parseCustomType(): Type {
 		assert(currentToken().tokenType == TokenType.Id)
 		val maybeQualifiedId = parseMaybeQualifiedId()
-		val lookupResult = sema.currentScope.lookup(maybeQualifiedId)
+		val lookupResult = sema.currentScope.lookup(maybeQualifiedId, Scope.LookupKind.LookupASTContext)
 		if (lookupResult.size != 1) {
 			unrecoverableError("More than one or no type declarations found")
 		}
@@ -329,7 +330,7 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 
 	private fun parseDeclRefExpr(): DeclRefExpr {
 		val id = parseMaybeQualifiedId()
-		val decl = sema.currentScope.lookup(id)
+		val decl = sema.currentScope.lookup(id, Scope.LookupKind.LookupVarDecl)
 
 		// TODO This is troublesome when we get to function overloading.
 		if (decl.size != 1) {
