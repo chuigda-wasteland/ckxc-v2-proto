@@ -195,7 +195,7 @@ class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: 
 
 	override fun getTypeImpl(): Type = destType
 
-	override fun getValueCategoryImpl(): ValueCategory = expr.valueCategory
+	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.RValue
 }
 
 class ImplicitDecayExpr(val expr: Expr) : Expr(ExprId.ImplicitDecayExpr) {

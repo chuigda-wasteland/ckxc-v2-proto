@@ -1,6 +1,7 @@
 package cn.ckxily.ckxc.sema
 
 import cn.ckxily.ckxc.ast.type.*
+import com.sun.org.apache.xpath.internal.operations.Bool
 
 fun Type.isInteger(): Boolean {
 	if (this.typeId == TypeId.Builtin) {
@@ -15,14 +16,15 @@ fun Type.isInteger(): Boolean {
 	return false
 }
 
-fun Type.isFloating(): Boolean {
-	return typeId == TypeId.Builtin && (this as BuiltinType).builtinTypeId == BuiltinTypeId.Float
-}
+fun Type.isFloating(): Boolean = typeId == TypeId.Builtin && (this as BuiltinType).builtinTypeId == BuiltinTypeId.Float
 
-fun Type.isBool(): Boolean {
-	return typeId == TypeId.Builtin && (this as BuiltinType).builtinTypeId == BuiltinTypeId.Boolean
-}
+fun Type.isBool(): Boolean = typeId == TypeId.Builtin && (this as BuiltinType).builtinTypeId == BuiltinTypeId.Boolean
 
+fun Type.isPointer(): Boolean = typeId == TypeId.Pointer
+
+fun Type.isReference(): Boolean = typeId == TypeId.Reference
+
+fun Type.isVoid(): Boolean = typeId == TypeId.Builtin && (this as BuiltinType).builtinTypeId == BuiltinTypeId.Void
 
 class TypeUtility {
 	companion object {

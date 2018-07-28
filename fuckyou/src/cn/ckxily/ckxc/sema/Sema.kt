@@ -232,10 +232,14 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 											else commonType)
 	}
 
-	fun dehugify(type: Type) = if (type.typeId == TypeId.Reference) (type as ReferenceType).referenced else type
+	fun dehugify(type: Type) = if (type.isReference()) (type as ReferenceType).referenced else type
 	fun botherIf(condi: Boolean, desc: String) = if (condi) unrecoverableError(desc) else 0
 
 	fun canImplicitCast(fromType: Type, destType: Type, bother: Boolean = false): Boolean {
+		if (fromType.fullEqual(destType)) {
+			return true
+		}
+
 		val castedFromType = dehugify(fromType)
 		val castedDestType = dehugify(destType)
 
@@ -251,18 +255,25 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 			return canImplicitCastBuiltin(castedFromType as BuiltinType, castedDestType as BuiltinType, bother)
 		}
 
+		if (castedFromType.typeId == TypeId.Pointer && castedDestType.typeId == TypeId.Pointer) {
+			return canImplicitCastPointer(castedFromType as PointerType, castedDestType as PointerType)
+		}
+
 		/// TODO handle user-defined conversion stuffs
 
 		return false
 	}
 
+	fun canImplicitCastPointer(fromType: PointerType, destType: PointerType) = destType.pointee.isVoid()
+
 	fun checkValueCategoryForCast(fromValueCategory: ValueCategory,
-																				destValueCategory: ValueCategory,
-																				bother: Boolean, destType: Type): Boolean {
+																destValueCategory: ValueCategory,
+																bother: Boolean, destType: Type): Boolean {
 		if (fromValueCategory == ValueCategory.RValue && destValueCategory == ValueCategory.LValue) {
 			botherIf(bother, "Shouldn't use rvalue when a lvalue is required")
 			return false
-		} else if (fromValueCategory == ValueCategory.RValue
+		}
+		else if (fromValueCategory == ValueCategory.RValue
 				&& destType.typeId == TypeId.Reference
 				&& !(destType as ReferenceType).referenced.qualifiers.isConst) {
 			botherIf(bother, "Binding rvalue to non-const lvalue reference")
@@ -272,48 +283,26 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	}
 
 	fun canImplicitCastBuiltin(fromType: BuiltinType, destType: BuiltinType, bother: Boolean): Boolean {
+		if (fromType.isInteger() && destType.isInteger()) {
+			return fromType.builtinTypeId.rank <= destType.builtinTypeId.rank
+		}
+		else if (fromType.isFloating() && destType.isFloating()) {
+			return fromType.builtinTypeId.rank <= destType.builtinTypeId.rank
+		}
+		else if (fromType.isBool() && destType.isBool()) {
+			return true
+		}
 		return false
 	}
 
 	// TODO this function looks nasty, split it into several parts in further commits.
 	fun actOnImplicitCast(expr: Expr, desired: Type): Expr? {
-		assert(expr.type.typeId == TypeId.Builtin)
-		assert(desired.typeId == TypeId.Builtin)
+		/// TODO add handler for user-defined cast
+		TODO("not implemented")
 
 		var currentExpr = expr
-		var builtinSrcType = expr.type as BuiltinType
-		val builtinDesiredType = desired as BuiltinType
-
-		if (builtinSrcType.builtinTypeId == builtinDesiredType.builtinTypeId) {
-			return currentExpr
-		}
-
-		if (!builtinDesiredType.qualifiers.isConst && builtinSrcType.qualifiers.isConst
-				|| !builtinDesiredType.qualifiers.isVolatile && builtinSrcType.qualifiers.isVolatile) {
-			return null
-		}
-
-		if (builtinDesiredType.qualifiers.isConst && !builtinSrcType.qualifiers.isConst) {
-			builtinSrcType = qualType(builtinSrcType,
-						if (builtinSrcType.qualifiers.isVolatile) getCVSpecifiers() else getCSpecifier()) as BuiltinType
-			currentExpr = ImplicitCastExpr(CastOperation.AddConst, currentExpr, builtinSrcType)
-		}
-
-		if (builtinDesiredType.qualifiers.isVolatile && !builtinSrcType.qualifiers.isVolatile) {
-			builtinSrcType = qualType(builtinSrcType,
-							if (builtinSrcType.qualifiers.isConst) getCVSpecifiers() else getVSpecifier()) as BuiltinType
-			currentExpr = ImplicitCastExpr(CastOperation.AddVolatile, currentExpr, builtinSrcType)
-		}
-
-		if (builtinDesiredType.isInteger() && builtinSrcType.isInteger()
-				|| builtinDesiredType.isFloating() && builtinSrcType.isFloating()) {
-			if (builtinDesiredType.builtinTypeId.rank > builtinSrcType.builtinTypeId.rank) {
-				return ImplicitCastExpr(CastOperation.IntegerWidenCast, currentExpr, desired)
-			}
-			else if (builtinDesiredType.builtinTypeId.rank == builtinSrcType.builtinTypeId.rank) {
-				return currentExpr
-			}
-		}
+		var exprType = expr.type
+		var desiredType = desired
 
 		return null
 	}
