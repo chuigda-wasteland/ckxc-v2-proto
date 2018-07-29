@@ -186,6 +186,42 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		}
 	}
 
+	fun actOnInitialization(decl: VarDecl, init: Expr) {
+		/// TODO add support for user-defined constructors
+
+		if (decl.type.isReference()) {
+			actOnRefInit(decl, init)
+			return
+		}
+
+		if (decl.type.isBuiltin() && dehugify(init.type).isBuiltin()) {
+			actOnBuiltinTypeInit(decl, init)
+			return
+		}
+	}
+
+	fun actOnBuiltinTypeInit(decl: VarDecl, init: Expr) {
+		if (canImplicitCast(init.type, decl.type)) {
+			decl.init = actOnImplicitCast(init, decl.type)
+			return
+		}
+		unrecoverableError("cannot initialize ${decl.type} with ${init.type}")
+	}
+
+	fun actOnRefInit(decl: VarDecl, init: Expr) {
+		val exprType = dehugify(init.type)
+		if (init.valueCategory == ValueCategory.RValue) {
+			if (!init.type.qualifiers.isConst) {
+				unrecoverableError("binding rvalue to non-const lvalue reference")
+			}
+		}
+		if (!(decl.type as ReferenceType).referenced.equalType(exprType)) {
+			unrecoverableError("cannot initialize reference of type ${(decl.type as ReferenceType).referenced} " +
+																"with ${exprType}")
+		}
+		decl.init = init
+	}
+
 	fun actOnAssignmentExpr(lhs: Expr, rhs: Expr, opCode: BinaryOpCode): Expr {
 		assert(opCode == BinaryOpCode.Assign)
 		if (lhs.valueCategory != ValueCategory.LValue) {

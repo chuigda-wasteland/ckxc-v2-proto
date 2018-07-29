@@ -17,6 +17,8 @@ fun Array<String>.main() {
 			let vi32 b = 2;
 			let vi32 c = 3;
 			let vi32 d = a;
+			let vi32 &rd = d;
+			let vi32 const& rc = c;
 			let vi8 e;
 			let bool result;
 			c = a + b * 42 + d;
