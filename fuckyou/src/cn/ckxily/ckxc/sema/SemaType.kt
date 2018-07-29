@@ -26,6 +26,8 @@ fun Type.isReference(): Boolean = typeId == TypeId.Reference
 
 fun Type.isVoid(): Boolean = typeId == TypeId.Builtin && (this as BuiltinType).builtinTypeId == BuiltinTypeId.Void
 
+fun Type.isBuiltin(): Boolean = typeId == TypeId.Builtin
+
 class TypeUtility {
 	companion object {
 		fun commonBuiltinType(ty1: BuiltinType, ty2: BuiltinType): Type? {

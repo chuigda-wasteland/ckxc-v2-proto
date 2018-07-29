@@ -186,7 +186,8 @@ enum class CastOperation(val desc: String) {
 	IntegerWidenCast("Widen cast for integral types"),
 	FloatingWidenCast("Widen cast for floating types"),
 	AddConst("Implicitly adding const specifier"),
-	AddVolatile("Implicitly adding volatile specifier")
+	AddVolatile("Implicitly adding volatile specifier"),
+	PointerBitwiseCast("Implicit bitcast from pointer to pointer")
 }
 
 class ImplicitCastExpr(val castOp: CastOperation, val expr: Expr, val destType: Type)

@@ -236,6 +236,8 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun botherIf(condi: Boolean, desc: String) = if (condi) unrecoverableError(desc) else 0
 
 	fun canImplicitCast(fromType: Type, destType: Type, bother: Boolean = false): Boolean {
+		/// TODO handle user-defined conversion stuffs
+
 		if (fromType.fullEqual(destType)) {
 			return true
 		}
@@ -258,8 +260,6 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		if (castedFromType.typeId == TypeId.Pointer && castedDestType.typeId == TypeId.Pointer) {
 			return canImplicitCastPointer(castedFromType as PointerType, castedDestType as PointerType)
 		}
-
-		/// TODO handle user-defined conversion stuffs
 
 		return false
 	}
@@ -298,12 +298,52 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	// TODO this function looks nasty, split it into several parts in further commits.
 	fun actOnImplicitCast(expr: Expr, desired: Type): Expr? {
 		/// TODO add handler for user-defined cast
-		TODO("not implemented")
 
 		var currentExpr = expr
 		var exprType = expr.type
 		var desiredType = desired
 
+		if (exprType.fullEqual(desiredType)) {
+			return expr
+		}
+
+		if (exprType.isReference() && desiredType.isReference()) {
+			return null
+		}
+
+		if (exprType.isReference()) {
+			exprType = (exprType as ReferenceType).referenced
+		}
+
+		if (exprType.isPointer() && desiredType.isPointer()) {
+			return performImplicitPointerCast(expr, exprType as PointerType, desiredType as PointerType);
+		}
+
+		if (exprType.isBuiltin() && desired.isBuiltin()) {
+			return performImplicitBuiltinTypeCast(expr, exprType as BuiltinType, desiredType as BuiltinType)
+		}
+
+		return null
+	}
+
+	fun performImplicitBuiltinTypeCast(expr: Expr, exprType: BuiltinType, desiredType: BuiltinType): Expr? {
+		if (exprType.isInteger() && desiredType.isInteger()) {
+			if (exprType.builtinTypeId.rank <= desiredType.builtinTypeId.rank) {
+				return ImplicitCastExpr(CastOperation.IntegerWidenCast, expr, desiredType)
+			}
+		}
+		else if (exprType.isFloating() && desiredType.isFloating()) {
+			if (exprType.builtinTypeId.rank <= desiredType.builtinTypeId.rank) {
+				return ImplicitCastExpr(CastOperation.FloatingWidenCast, expr, desiredType)
+			}
+		}
+		return null
+	}
+
+	fun performImplicitPointerCast(expr: Expr, exprType: PointerType, desiredType: PointerType): Expr? {
+		if (desiredType.pointee.isVoid()) {
+			return ImplicitCastExpr(CastOperation.PointerBitwiseCast, expr, desiredType)
+		}
 		return null
 	}
 
@@ -311,3 +351,4 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 		return if (expr.valueCategory == ValueCategory.RValue) expr else ImplicitDecayExpr(expr)
 	}
 }
+
