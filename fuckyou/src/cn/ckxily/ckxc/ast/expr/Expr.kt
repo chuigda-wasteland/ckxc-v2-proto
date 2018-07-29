@@ -2,6 +2,7 @@ package cn.ckxily.ckxc.ast.expr
 
 import cn.ckxily.ckxc.codegen.ASTConsumer
 import cn.ckxily.ckxc.ast.decl.Decl
+import cn.ckxily.ckxc.ast.decl.FuncDecl
 import cn.ckxily.ckxc.ast.decl.VarDecl
 import cn.ckxily.ckxc.ast.type.BuiltinType
 import cn.ckxily.ckxc.ast.type.BuiltinTypeId
@@ -17,7 +18,8 @@ enum class ExprId(val desc: String) {
 	UnaryExpr("Unary expression"),
 	BinaryExpr("Binary expression"),
 	ImplicitCastExpr("Implicit cast expression"),
-	ImplicitDecayExpr("Implicit decay expression")
+	ImplicitDecayExpr("Implicit decay expression"),
+	CallExpr("Call expression")
 }
 
 enum class ValueCategory(val desc: String) {
@@ -180,6 +182,14 @@ class BinaryExpr(val opCode: BinaryOpCode, val lhs: Expr, val rhs: Expr, private
 	}
 
 	override fun getTypeImpl(): Type = cachedType
+}
+
+class CallExpr(val callee: FuncDecl, val args: List<Expr>) : Expr(ExprId.CallExpr) {
+	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitCallExpr(this)
+
+	override fun getValueCategoryImpl(): ValueCategory = ValueCategory.RValue
+
+	override fun getTypeImpl(): Type = callee.retType
 }
 
 enum class CastOperation(val desc: String) {

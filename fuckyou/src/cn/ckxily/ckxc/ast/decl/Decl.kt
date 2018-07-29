@@ -67,7 +67,7 @@ class EnumDecl(override val nameStr: String)
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitEnumDecl(this)
 }
 
-class FuncDecl(override val nameStr: String, val paramList: MutableList<VarDecl>, val retType: Type,
+class FuncDecl(override val nameStr: String, val paramList: MutableList<VarDecl>, var retType: Type,
 							 var funcBody: CompoundStmt? = null)
 	: Decl(DeclKind.FuncDecl) {
 	override fun accept(astConsumer: ASTConsumer): Any? = astConsumer.visitFuncDecl(this)

@@ -143,7 +143,6 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	}
 
 	fun actOnFuncDecl(scope: Scope, name: String): FuncDecl {
-		checkDuplicate(scope, name)
 		return FuncDecl(name, ArrayList(), BuiltinType(BuiltinTypeId.Int8, getNoSpecifier()), null)
 	}
 
@@ -383,5 +382,42 @@ class Sema(var topLevelDeclContext: DeclContext = TransUnitDecl(),
 	fun actOnLValueToRValueDecay(expr: Expr): Expr {
 		return if (expr.valueCategory == ValueCategory.RValue) expr else ImplicitDecayExpr(expr)
 	}
-}
 
+	fun actOnFuncCall(id: Either<String, QualifiedName>, args: MutableList<Expr>): CallExpr {
+		val funcDecls = currentScope.lookup(id, Scope.LookupKind.LookupFunc)
+		if (funcDecls.isEmpty()) {
+			unrecoverableError("unknown function `$id'")
+		}
+
+		for (funcDecl in funcDecls) {
+			if (canPerfectFreeze(funcDecl as FuncDecl, args)) {
+				return doPerfectFreeze(funcDecl as FuncDecl, args)
+			}
+		}
+
+		unrecoverableError("no viable call to function $id, candicate ${funcDecls.size} functions")
+	}
+
+	private fun doPerfectFreeze(funcDecl: FuncDecl, args: List<Expr>): CallExpr {
+		val convertedArgs: MutableList<Expr> = ArrayList()
+		for (argParamPair in args.zip(funcDecl.paramList)) {
+			convertedArgs.add(actOnLValueToRValueDecay(actOnImplicitCast(argParamPair.first, argParamPair.second.type)!!))
+		}
+		return CallExpr(funcDecl, convertedArgs)
+	}
+
+	private fun canPerfectFreeze(funcDecl: FuncDecl, args: List<Expr>): Boolean {
+		/// TODO passing arguments to functions is not simply "copy or cast", it involves reference handling and more
+		if (funcDecl.paramList.size != args.size) {
+			return false
+		}
+
+		for (declTypePair in funcDecl.paramList.zip(args)) {
+			if (!canImplicitCast(declTypePair.second.type, declTypePair.first.type)) {
+				return false
+			}
+		}
+
+		return true
+	}
+}

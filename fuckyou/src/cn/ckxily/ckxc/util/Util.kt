@@ -13,6 +13,8 @@ sealed class Either<out T, out U> {
 		is Left -> f(obj)
 		is Right -> g(obj)
 	}
+
+	override fun toString() = either({"$it"}, {"$it"})
 }
 
 class Left<T>(var obj: T) : Either<T, Nothing>()

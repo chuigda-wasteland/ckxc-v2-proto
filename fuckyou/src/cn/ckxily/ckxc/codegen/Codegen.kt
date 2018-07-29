@@ -20,6 +20,7 @@ interface ASTConsumer {
 	fun visitBinaryExpr(binaryExpr: BinaryExpr): Any?
 	fun visitImplicitDecay(expr: ImplicitDecayExpr): Any?
 	fun visitImplicitCastExpr(expr: ImplicitCastExpr): Any?
+	fun visitCallExpr(expr: CallExpr): Any?
 }
 
 class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
@@ -128,6 +129,20 @@ class BetterASTPrinter(private var indentation: Int = 0) : ASTConsumer {
 			CastOperation.FloatingWidenCast -> {
 				println("ImplicitFloatingWiden from ${expr.expr.type} to ${expr.destType}")
 				withIndent { expr.expr.accept(this) }
+			}
+			CastOperation.PointerBitwiseCast -> {
+				println("PointerBitwiseCast from ${expr.expr.type} to ${expr.destType}")
+			}
+		}
+		return null
+	}
+
+	override fun visitCallExpr(expr: CallExpr): Any? {
+		indent(); println("CallExpr")
+		withIndent {
+			indent(); print("Callee: \n"); withIndent { expr.callee.accept(this) }
+			for (argParamPair in expr.args.zip(expr.callee.paramList)) {
+				indent(); println("param[\"${argParamPair.second.nameStr}\"] = "); argParamPair.first.accept(this)
 			}
 		}
 		return null

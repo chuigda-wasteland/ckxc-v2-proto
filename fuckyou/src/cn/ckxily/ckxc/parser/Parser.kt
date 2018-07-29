@@ -13,6 +13,7 @@ import cn.ckxily.ckxc.lex.TokenType
 import cn.ckxily.ckxc.sema.Scope
 import cn.ckxily.ckxc.sema.Sema
 import cn.ckxily.ckxc.util.*
+import java.util.*
 
 class QualifiedName(val nameChains: List<String>)
 
@@ -240,6 +241,15 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 			}
 		}
 		expectAndConsume(TokenType.RightParen)
+
+		funcDecl.retType = if (currentToken().tokenType == TokenType.Colon) {
+			nextToken()
+			parseType()
+		}
+		else {
+			BuiltinType(BuiltinTypeId.Void, getNoSpecifier())
+		}
+
 		/// @todo
 		/// If the following item is '{', then this declaration will be a definition. We do not quit the "param list scope"
 		/// at once so that we can access items in the param scope. This is quite disgusting.
@@ -307,9 +317,25 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 	}
 
 	private fun parseUnaryExpr(): Expr = when (currentToken().tokenType) {
-		TokenType.Id -> parseDeclRefExpr()
+		TokenType.Id -> if (peekOneToken().tokenType == TokenType.LeftParen) parseCallExpr() else parseDeclRefExpr()
 		TokenType.Number -> parseLiteral()
 		else -> assertionFailed("Unreachable code!")
+	}
+
+	private fun parseCallExpr(): CallExpr {
+		val id = parseMaybeQualifiedId()
+		expectAndConsume(TokenType.LeftParen)
+		val args: MutableList<Expr> = LinkedList()
+
+		while (currentToken().tokenType != TokenType.RightParen) {
+			args.add(parseExpr())
+			if (currentToken().tokenType == TokenType.Comma) {
+				nextToken()
+			}
+		}
+		expectAndConsume(TokenType.RightParen)
+
+		return sema.actOnFuncCall(id, args)
 	}
 
 	private fun parseLiteral(): Expr = when(currentToken().tokenType) {
@@ -329,12 +355,11 @@ class ParserStateMachine(private val tokens: List<Token>, private val sema: Sema
 		val id = parseMaybeQualifiedId()
 		val decl = sema.currentScope.lookup(id, Scope.LookupKind.LookupVarDecl)
 
-		// TODO This is troublesome when we get to function overloading.
 		if (decl.size != 1) {
 			unrecoverableError("Ambiguous!")
 		}
 
-		return sema.actOnDeclRefExpr(decl.first() as? VarDecl ?: unrecoverableError("Expected VarDecl!"))
+		return sema.actOnDeclRefExpr(decl.first() as? VarDecl ?: assertionFailed("Expected VarDecl!"))
 	}
 
 	private fun expect(tokenType: TokenType) {
