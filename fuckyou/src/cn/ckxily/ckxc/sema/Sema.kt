@@ -75,10 +75,7 @@ class Scope(val parent: Scope? = null,
 	}
 
 	fun lookup(maybeQualifiedName: Either<String, QualifiedName>, lookupKind: LookupKind): List<Decl> =
-			when (maybeQualifiedName) {
-				is Left -> lookup(maybeQualifiedName.asLeft(), lookupKind)
-				is Right -> lookup(maybeQualifiedName.asRight(), lookupKind)
-			}
+			maybeQualifiedName.either({lookup(it, lookupKind)}, {lookup(it, lookupKind)})
 }
 
 tailrec fun dlLookup(scope: Scope, name: String, lookupKind: Scope.LookupKind): List<Decl> {
