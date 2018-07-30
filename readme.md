@@ -1,3 +1,6 @@
+# Deprecated
+this organization is deprecated and won't be used any more. Refer https://coding.net/u/ICEYSELF/p/ckxc-v2-proto/git instead.
+
 # About project ckxc-v2-proto
 
 ## Intention
